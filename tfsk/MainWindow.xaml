@@ -9,8 +9,12 @@
 			<RowDefinition Height="150" />
 			<RowDefinition Height="400" />
 		</Grid.RowDefinitions>
+		<Grid.ColumnDefinitions>
+			<ColumnDefinition />
+			<ColumnDefinition />
+		</Grid.ColumnDefinitions>
 
-		<ListView Margin="10" Name="lvChangeset" Grid.Row="0">
+		<ListView Margin="10" Grid.ColumnSpan="2" Grid.Row="0" Name="lvChangeset" SelectionChanged="lvChangeset_SelectionChanged" SelectedIndex="0" SelectionMode="Single" >
 			<ListView.View>
 				<GridView>
 					<GridViewColumn Header="ChangesetID" Width="100" DisplayMemberBinding="{Binding ChangesetId}" />
@@ -20,8 +24,11 @@
 				</GridView>
 			</ListView.View>
 		</ListView>
-		<TextBox x:Name="tbChangeComment" Grid.Row="1" HorizontalAlignment="Left" Margin="0,0,0,0" TextWrapping="Wrap" Text="changecomment" VerticalAlignment="Top" />
-		<TextBox x:Name="tbChangeDiff" Grid.Row="2" HorizontalAlignment="Left" Margin="0,0,0,0" TextWrapping="Wrap" Text="changediff" VerticalAlignment="Top" />
+		<TextBox x:Name="tbChangeComment" Grid.ColumnSpan="2" Grid.Row="1" HorizontalAlignment="Left" Margin="0,0,0,0" TextWrapping="Wrap" Text="changecomment" VerticalAlignment="Top" />
+
+		<ListBox x:Name="lbFiles" Grid.Column="0" Grid.Row="2" />
+
+		<TextBox x:Name="tbChangeDiff" Grid.Row="2" Grid.Column="1" HorizontalAlignment="Left" Margin="0,0,0,0" TextWrapping="Wrap" Text="changediff" VerticalAlignment="Top" />
 
 	</Grid>
 </Window>

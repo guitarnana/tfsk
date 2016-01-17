@@ -58,7 +58,6 @@ namespace tfsk
 			lvChangeset.ItemsSource = changesets;
 
 			Changeset changeset = changesets[0];
-			tbChangeComment.Text = changesets[0].Comment;
 
 			StringBuilder strBuilder = new StringBuilder();
 
@@ -104,6 +103,15 @@ namespace tfsk
 
 			StreamReader sr = new StreamReader(memStream);
 			return sr.ReadToEnd();
+		}
+
+		private void lvChangeset_SelectionChanged(object sender, SelectionChangedEventArgs e)
+		{
+			Changeset changeset = e.AddedItems[0] as Changeset;
+			if (changeset != null)
+			{
+				tbChangeComment.Text = changeset.Comment;
+			}
 		}
 	}
 }
