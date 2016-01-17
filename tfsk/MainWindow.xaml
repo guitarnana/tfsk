@@ -1,0 +1,18 @@
+﻿<Window
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:WPF="clr-namespace:Microsoft.TeamFoundation.Controls.WPF;assembly=Microsoft.TeamFoundation.Controls" x:Class="tfsk.MainWindow"
+        Title="MainWindow" Height="600" Width="525">
+	<Grid VerticalAlignment="Top">
+		<Grid.RowDefinitions>
+			<RowDefinition Height="150" />
+			<RowDefinition Height="150" />
+			<RowDefinition Height="400" />
+		</Grid.RowDefinitions>
+		
+		<TextBox x:Name="tbChangeSet" Grid.Row="0" HorizontalAlignment="Left" Margin="0,0,0,0" TextWrapping="Wrap" Text="changeset" VerticalAlignment="Top" />
+		<TextBox x:Name="tbChangeComment" Grid.Row="1" HorizontalAlignment="Left" Margin="0,0,0,0" TextWrapping="Wrap" Text="changecomment" VerticalAlignment="Top" />
+		<TextBox x:Name="tbChangeDiff" Grid.Row="2" HorizontalAlignment="Left" Margin="0,0,0,0" TextWrapping="Wrap" Text="changediff" VerticalAlignment="Top" />
+
+	</Grid>
+</Window>
