@@ -55,7 +55,7 @@ namespace tfsk
 
 			List<Changeset> changesets = versionControl.QueryHistory(@"$/Developer/jarupatj", RecursionType.Full, 10).ToList();
 
-			tbChangeSet.Text = String.Join("\n", changesets.Select(c => String.Format("{0} {1} {2}", c.ChangesetId, c.CommitterDisplayName, c.Committer)));
+			lvChangeset.ItemsSource = changesets;
 
 			Changeset changeset = changesets[0];
 			tbChangeComment.Text = changesets[0].Comment;
