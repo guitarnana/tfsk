@@ -49,8 +49,8 @@ namespace tfsk
 			InitializeComponent();
 
 			var tfsUrl = "http://sqlbuvsts01:8080/main";
-			//var serverPath = @"$/Developer/jarupatj";
-			var serverPath = @"$/SQL Server/Imp/DS_Main";
+			var serverPath = @"$/Developer/jarupatj";
+			//var serverPath = @"$/SQL Server/Imp/DS_Main";
 
 			// Get a reference to our Team Foundation Server. 
 			TfsTeamProjectCollection tpc = new TfsTeamProjectCollection(new Uri(tfsUrl));
@@ -102,10 +102,13 @@ namespace tfsk
 
 		private void lvChangeset_SelectionChanged(object sender, SelectionChangedEventArgs e)
 		{
-			Changeset changeset = e.AddedItems[0] as Changeset;
-			if (changeset != null)
+			if (e.AddedItems.Count > 0)
 			{
-				UpdateUI(changeset);
+				Changeset changeset = e.AddedItems[0] as Changeset;
+				if (changeset != null)
+				{
+					UpdateUI(changeset);
+				}
 			}
 		}
 
@@ -124,13 +127,15 @@ namespace tfsk
 			tbChangeDiff.Text = DiffItemWithPrevVersion(versionControl, changes[0].Item);
 		}
 
-		private void lbFiles_SelectionChanged(object sender, SelectionChangedEventArgs e)
+		private void lvFiles_SelectionChanged(object sender, SelectionChangedEventArgs e)
 		{
-			string fileName = e.AddedItems[0] as string;
-			if(fileName != null)
+			if (e.AddedItems.Count > 0)
 			{
-				Item item = versionControl.GetItem(fileName);
-				tbChangeDiff.Text = DiffItemWithPrevVersion(versionControl, item);
+				Change change = e.AddedItems[0] as Change;
+				if (change != null)
+				{
+					tbChangeDiff.Text = DiffItemWithPrevVersion(versionControl, change.Item);
+				}
 			}
 		}
 	}

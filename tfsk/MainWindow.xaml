@@ -32,10 +32,10 @@
 
 		<TextBox x:Name="tbChangeComment" Grid.ColumnSpan="2" Grid.Row="1" HorizontalAlignment="Left" Margin="0,0,0,0" TextWrapping="Wrap" Text="changecomment" VerticalAlignment="Top" VerticalScrollBarVisibility="Auto" />
 
-		<ListView Margin="10" Grid.Column="0" Grid.Row="2" Name="lvFiles" SelectedIndex="0" SelectionMode="Single" >
+		<ListView Margin="10" Grid.Column="0" Grid.Row="2" Name="lvFiles" SelectedIndex="0" SelectionMode="Single" SelectionChanged="lvFiles_SelectionChanged" >
 			<ListView.View>
 				<GridView>
-					<GridViewColumn Header="File" Width="100" DisplayMemberBinding="{Binding Item.ServerItem}" />
+					<GridViewColumn Header="File" Width="300" DisplayMemberBinding="{Binding Item.ServerItem}" />
 					<GridViewColumn Header="Operation" Width="250" DisplayMemberBinding="{Binding ChangeType}" />
 				</GridView>
 			</ListView.View>
