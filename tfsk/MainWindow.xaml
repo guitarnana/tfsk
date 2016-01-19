@@ -15,19 +15,31 @@
 		</Grid.ColumnDefinitions>
 
 		<ListView Margin="10" Grid.ColumnSpan="2" Grid.Row="0" Name="lvChangeset" SelectionChanged="lvChangeset_SelectionChanged" SelectedIndex="0" SelectionMode="Single" >
+			<ListView.ItemContainerStyle>
+				<Style TargetType="ListViewItem">
+					<Setter Property="Height" Value="20" />
+				</Style>
+			</ListView.ItemContainerStyle>
 			<ListView.View>
 				<GridView>
 					<GridViewColumn Header="ChangesetID" Width="100" DisplayMemberBinding="{Binding ChangesetId}" />
 					<GridViewColumn Header="Message" Width="250" DisplayMemberBinding="{Binding Comment}" />
 					<GridViewColumn Header="Commit Time" Width="150" DisplayMemberBinding="{Binding CreationDate}" />
-					<GridViewColumn Header="Committer" Width="100" DisplayMemberBinding="{Binding CommitterDisplayName}" />
+					<GridViewColumn Header="Committer" Width="100" DisplayMemberBinding="{Binding OwnerDisplayName}" />
 				</GridView>
 			</ListView.View>
 		</ListView>
 		<TextBox x:Name="tbChangeComment" Grid.ColumnSpan="2" Grid.Row="1" HorizontalAlignment="Left" Margin="0,0,0,0" TextWrapping="Wrap" Text="changecomment" VerticalAlignment="Top" />
 
-		<ListBox x:Name="lbFiles" Grid.Column="0" Grid.Row="2" SelectionChanged="lbFiles_SelectionChanged" />
-
+		<ListView Margin="10" Grid.Column="0" Grid.Row="2" Name="lvFiles" SelectedIndex="0" SelectionMode="Single" >
+			<ListView.View>
+				<GridView>
+					<GridViewColumn Header="File" Width="100" DisplayMemberBinding="{Binding Item.ServerItem}" />
+					<GridViewColumn Header="Operation" Width="250" DisplayMemberBinding="{Binding ChangeType}" />
+				</GridView>
+			</ListView.View>
+		</ListView>
+		
 		<TextBox x:Name="tbChangeDiff" Grid.Row="2" Grid.Column="1" HorizontalAlignment="Left" Margin="0,0,0,0" TextWrapping="Wrap" Text="changediff" VerticalAlignment="Top" />
 
 	</Grid>

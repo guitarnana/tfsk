@@ -49,13 +49,16 @@ namespace tfsk
 			InitializeComponent();
 
 			var tfsUrl = "http://sqlbuvsts01:8080/main";
+			//var serverPath = @"$/Developer/jarupatj";
+			var serverPath = @"$/SQL Server/Imp/DS_Main";
+
 			// Get a reference to our Team Foundation Server. 
 			TfsTeamProjectCollection tpc = new TfsTeamProjectCollection(new Uri(tfsUrl));
 
 			// Get a reference to Version Control. 
 			versionControl = tpc.GetService<VersionControlServer>();
 
-			List<Changeset> changesets = versionControl.QueryHistory(@"$/Developer/jarupatj", RecursionType.Full, 10).ToList();
+			List<Changeset> changesets = versionControl.QueryHistory(serverPath, RecursionType.Full, 100).ToList();
 
 			lvChangeset.ItemsSource = changesets;
 
@@ -97,11 +100,6 @@ namespace tfsk
 			return sr.ReadToEnd();
 		}
 
-		private List<string> GetAllItemsChanged(Change[] changes)
-		{
-			return changes.Select(change => change.Item.ServerItem).ToList();
-		}
-
 		private void lvChangeset_SelectionChanged(object sender, SelectionChangedEventArgs e)
 		{
 			Changeset changeset = e.AddedItems[0] as Changeset;
@@ -120,7 +118,7 @@ namespace tfsk
 			Change[] changes = versionControl.GetChangesForChangeset(changeset.ChangesetId, false, 10, null);
 
 			// Update list of change files
-			lbFiles.ItemsSource = GetAllItemsChanged(changes);
+			lvFiles.ItemsSource = changes;
 
 			// Update diff to show the first file of the change			
 			tbChangeDiff.Text = DiffItemWithPrevVersion(versionControl, changes[0].Item);
