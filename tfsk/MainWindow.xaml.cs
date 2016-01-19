@@ -42,6 +42,8 @@ namespace tfsk
 	/// </summary>
 	public partial class MainWindow : Window
 	{
+		private VersionControlServer versionControl;
+
 		public MainWindow()
 		{
 			InitializeComponent();
@@ -51,23 +53,13 @@ namespace tfsk
 			TfsTeamProjectCollection tpc = new TfsTeamProjectCollection(new Uri(tfsUrl));
 
 			// Get a reference to Version Control. 
-			VersionControlServer versionControl = tpc.GetService<VersionControlServer>();
+			versionControl = tpc.GetService<VersionControlServer>();
 
 			List<Changeset> changesets = versionControl.QueryHistory(@"$/Developer/jarupatj", RecursionType.Full, 10).ToList();
 
 			lvChangeset.ItemsSource = changesets;
 
-			Changeset changeset = changesets[0];
-
-			StringBuilder strBuilder = new StringBuilder();
-
-			Change[] changes = versionControl.GetChangesForChangeset(changeset.ChangesetId, false, 10, null);
-			foreach (Change change in changes)
-			{
-				Item item = change.Item;
-				strBuilder.AppendFormat("{0}\n", DiffItemWithPrevVersion(versionControl, item));
-			}
-			tbChangeDiff.Text = strBuilder.ToString();
+			UpdateUI(changesets[0]);
 		}
 
 		private string DiffItemWithPrevVersion(VersionControlServer versionControl, Item item)
@@ -105,12 +97,42 @@ namespace tfsk
 			return sr.ReadToEnd();
 		}
 
+		private List<string> GetAllItemsChanged(Change[] changes)
+		{
+			return changes.Select(change => change.Item.ServerItem).ToList();
+		}
+
 		private void lvChangeset_SelectionChanged(object sender, SelectionChangedEventArgs e)
 		{
 			Changeset changeset = e.AddedItems[0] as Changeset;
 			if (changeset != null)
 			{
-				tbChangeComment.Text = changeset.Comment;
+				UpdateUI(changeset);
+			}
+		}
+
+		private void UpdateUI(Changeset changeset)
+		{
+			// Update change comment
+			tbChangeComment.Text = changeset.Comment;
+
+			// Get all changes for this changeset
+			Change[] changes = versionControl.GetChangesForChangeset(changeset.ChangesetId, false, 10, null);
+
+			// Update list of change files
+			lbFiles.ItemsSource = GetAllItemsChanged(changes);
+
+			// Update diff to show the first file of the change			
+			tbChangeDiff.Text = DiffItemWithPrevVersion(versionControl, changes[0].Item);
+		}
+
+		private void lbFiles_SelectionChanged(object sender, SelectionChangedEventArgs e)
+		{
+			string fileName = e.AddedItems[0] as string;
+			if(fileName != null)
+			{
+				Item item = versionControl.GetItem(fileName);
+				tbChangeDiff.Text = DiffItemWithPrevVersion(versionControl, item);
 			}
 		}
 	}
