@@ -130,7 +130,7 @@ namespace tfsk
 		private void UpdateChangeDiffBox(Change change)
 		{
 			rtbChangeDiff.Document.Blocks.Clear();
-			rtbChangeDiff.Document.Blocks.Add(new Paragraph(new Run(DiffItemWithPrevVersion(versionControl, change.Item))));
+			rtbChangeDiff.Document.Blocks.Add(CreateDiffTextForDisplay(DiffItemWithPrevVersion(versionControl, change.Item)));
 		}
 
 		private void lvFiles_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -143,6 +143,64 @@ namespace tfsk
 					UpdateChangeDiffBox(change);
 				}
 			}
+		}
+
+		Paragraph CreateDiffTextForDisplay(string diffText)
+		{
+			Paragraph diffParagraph = new Paragraph();
+
+			string[] lines = diffText.Split(new string[] { "\n", "\r\n" }, StringSplitOptions.None);
+
+			foreach (string line in lines)
+			{
+				if (line.StartsWith("+"))
+				{
+					diffParagraph.Inlines.Add(new AddTextRun(line));
+				}
+				else if (line.StartsWith("-"))
+				{
+					diffParagraph.Inlines.Add(new DeleteTextRun(line));
+				}
+				else if (line.StartsWith("@@"))
+				{
+					diffParagraph.Inlines.Add(new LineBreak());
+					diffParagraph.Inlines.Add(new LineNumberTextRun(line));
+				}
+				else
+				{
+					diffParagraph.Inlines.Add(new Run(line));
+				}
+				diffParagraph.Inlines.Add(new LineBreak());
+			}
+
+			return diffParagraph;
+		}
+	}
+
+	public class AddTextRun : Run
+	{
+		public AddTextRun (string text) 
+			: base(text)
+		{
+			this.Foreground = Brushes.Green;
+		}
+	}
+
+	public class DeleteTextRun : Run
+	{
+		public DeleteTextRun(string text)
+			: base(text)
+		{
+			this.Foreground = Brushes.Red;
+		}
+	}
+
+	public class LineNumberTextRun : Run
+	{
+		public LineNumberTextRun(string text)
+			: base(text)
+		{
+			this.Foreground = Brushes.Blue;
 		}
 	}
 }
