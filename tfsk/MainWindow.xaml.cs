@@ -112,6 +112,18 @@ namespace tfsk
 			}
 		}
 
+		private void lvFiles_SelectionChanged(object sender, SelectionChangedEventArgs e)
+		{
+			if (e.AddedItems.Count > 0)
+			{
+				Change change = e.AddedItems[0] as Change;
+				if (change != null)
+				{
+					UpdateChangeDiffBox(change);
+				}
+			}
+		}
+
 		private void UpdateUI(Changeset changeset)
 		{
 			// Update change comment
@@ -131,18 +143,6 @@ namespace tfsk
 		{
 			rtbChangeDiff.Document.Blocks.Clear();
 			rtbChangeDiff.Document.Blocks.Add(CreateDiffTextForDisplay(DiffItemWithPrevVersion(versionControl, change.Item)));
-		}
-
-		private void lvFiles_SelectionChanged(object sender, SelectionChangedEventArgs e)
-		{
-			if (e.AddedItems.Count > 0)
-			{
-				Change change = e.AddedItems[0] as Change;
-				if (change != null)
-				{
-					UpdateChangeDiffBox(change);
-				}
-			}
 		}
 
 		Paragraph CreateDiffTextForDisplay(string diffText)
