@@ -124,7 +124,13 @@ namespace tfsk
 			lvFiles.ItemsSource = changes;
 
 			// Update diff to show the first file of the change			
-			tbChangeDiff.Text = DiffItemWithPrevVersion(versionControl, changes[0].Item);
+			UpdateChangeDiffBox(changes[0]);
+		}
+
+		private void UpdateChangeDiffBox(Change change)
+		{
+			rtbChangeDiff.Document.Blocks.Clear();
+			rtbChangeDiff.Document.Blocks.Add(new Paragraph(new Run(DiffItemWithPrevVersion(versionControl, change.Item))));
 		}
 
 		private void lvFiles_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -134,7 +140,7 @@ namespace tfsk
 				Change change = e.AddedItems[0] as Change;
 				if (change != null)
 				{
-					tbChangeDiff.Text = DiffItemWithPrevVersion(versionControl, change.Item);
+					UpdateChangeDiffBox(change);
 				}
 			}
 		}

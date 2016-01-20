@@ -33,7 +33,7 @@
 		</ListView>
 
 		<TextBox x:Name="tbChangeComment" Grid.Row="0" Grid.Column="2" Margin="5" Text="changecomment" 
-				 VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" />
+				 VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" IsReadOnly="True" />
 
 		<ListView Margin="5" Grid.Row="2" Grid.Column="0" Name="lvFiles" SelectionMode="Single" 
 				  SelectedIndex="0" SelectionChanged="lvFiles_SelectionChanged" >
@@ -45,8 +45,8 @@
 			</ListView.View>
 		</ListView>
 
-		<TextBox x:Name="tbChangeDiff" Grid.Row="2" Grid.Column="2" Margin="5" Text="changediff" 
-				 VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" />
+		<RichTextBox x:Name="rtbChangeDiff" Grid.Row="2" Grid.Column="2" Margin="5" 
+				 VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" IsReadOnly="True" />
 
 		<GridSplitter Grid.Column="1" Grid.RowSpan="3" Width="2" HorizontalAlignment="Center" />
 		<GridSplitter Grid.ColumnSpan="3" Grid.Row="1" Height="2" HorizontalAlignment="Stretch" VerticalAlignment="Center" ResizeDirection="Rows" />
