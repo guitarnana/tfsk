@@ -1,39 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
 using System.Windows.Documents;
-using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-
-
-// https://www.nuget.org/packages/Microsoft.VisualStudio.Services.InteractiveClient/
-using Microsoft.VisualStudio.Services.Client;
-
-// https://www.nuget.org/packages/Microsoft.VisualStudio.Services.Client/
-using Microsoft.VisualStudio.Services.Common;
-
-// https://www.nuget.org/packages/Microsoft.TeamFoundationServer.Client/
-using Microsoft.TeamFoundation.WorkItemTracking.WebApi;
-using Microsoft.TeamFoundation.WorkItemTracking.WebApi.Models;
+using System.Collections.ObjectModel;
+using System.IO;
 
 using Microsoft.TeamFoundation.Client;
-using Microsoft.TeamFoundation.Framework.Common;
-using Microsoft.TeamFoundation.Framework.Client;
-using Microsoft.TeamFoundation.WorkItemTracking.Client;
-using System.Net;
-
 using Microsoft.TeamFoundation.VersionControl.Client;
-using System.Collections.ObjectModel;
 using Microsoft.TeamFoundation.VersionControl.Common;
-using System.IO;
+
 
 namespace tfsk
 {
@@ -42,7 +20,7 @@ namespace tfsk
 	/// </summary>
 	public partial class MainWindow : Window
 	{
-		private VersionControlServer versionControl;
+		private readonly VersionControlServer versionControl;
 
 		public MainWindow()
 		{
@@ -53,11 +31,10 @@ namespace tfsk
 			if (!ParseCommandlineArguments(out arguments))
 			{
 				// print usage
-
 				return;
 			}
 
-			string tfsUrl, path;
+			string tfsUrl, path, numStr;
 			if (!arguments.TryGetValue("server", out tfsUrl))
 			{
 				tfsUrl = "http://sqlbuvsts01:8080/main";
@@ -70,12 +47,24 @@ namespace tfsk
 				Console.WriteLine(@"No path specify. Default to $/SQL Server/Imp/DS_Main");
 			}
 			//var serverPath = @"$/Developer/jarupatj";
-			
-			TfsTeamProjectCollection tpc = new TfsTeamProjectCollection(new Uri(tfsUrl));
 
+			int numDisplay = 100;
+			if (arguments.TryGetValue("numdisplay", out numStr))
+			{
+				if (!Int32.TryParse(numStr, out numDisplay))
+				{
+					Console.WriteLine("Invalid num display. Default to 100.");
+				}
+			}
+			else
+			{
+				Console.WriteLine("Invalid num display. Default to 100.");
+			}
+
+			TfsTeamProjectCollection tpc = new TfsTeamProjectCollection(new Uri(tfsUrl));
 			versionControl = tpc.GetService<VersionControlServer>();
 
-			List<Changeset> changesets = versionControl.QueryHistory(path, RecursionType.Full, 100).ToList();
+			List<Changeset> changesets = versionControl.QueryHistory(path, RecursionType.Full, numDisplay).ToList();
 
 			lvChangeset.ItemsSource = changesets;
 
@@ -96,6 +85,10 @@ namespace tfsk
 				else if (String.Equals(args[i], "-path", StringComparison.OrdinalIgnoreCase))
 				{
 					arguments.Add(args[i].Replace("-", ""), args[i + 1]);
+				}
+				else if (String.Equals(args[i], "-numdisplay", StringComparison.OrdinalIgnoreCase))
+				{
+					arguments.Add(args[i].Replace("-", ""), args[i+1]);
 				}
 				else
 				{
