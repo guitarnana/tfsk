@@ -37,17 +37,16 @@ namespace tfsk
 			string tfsUrl, path, numStr;
 			if (!arguments.TryGetValue("server", out tfsUrl))
 			{
-				tfsUrl = "http://sqlbuvsts01:8080/main";
-				Console.WriteLine("No server specify. Default to http://sqlbuvsts01:8080/main");
+				Console.WriteLine("No server specify.");
+				return;
 			}
 
 			if (!arguments.TryGetValue("path", out path))
 			{
-				path = @"$/SQL Server/Imp/DS_Main";
-				Console.WriteLine(@"No path specify. Default to $/SQL Server/Imp/DS_Main");
+				Console.WriteLine(@"No path specify.");
+				return;
 			}
-			//var serverPath = @"$/Developer/jarupatj";
-
+			
 			int numDisplay = 100;
 			if (arguments.TryGetValue("numdisplay", out numStr))
 			{
