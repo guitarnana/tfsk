@@ -1,0 +1,37 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.31101.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "tfsk", "tfsk\tfsk.csproj", "{576BEFA1-72B8-4CE8-964F-7F3766489E44}"
+EndProject
+Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "Setup", "Setup\Setup.vdproj", "{C8279835-C661-4852-B0EF-2E914008ADE8}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Debug|x64 = Debug|x64
+		Release|Any CPU = Release|Any CPU
+		Release|x64 = Release|x64
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{576BEFA1-72B8-4CE8-964F-7F3766489E44}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{576BEFA1-72B8-4CE8-964F-7F3766489E44}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{576BEFA1-72B8-4CE8-964F-7F3766489E44}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{576BEFA1-72B8-4CE8-964F-7F3766489E44}.Debug|x64.Build.0 = Debug|Any CPU
+		{576BEFA1-72B8-4CE8-964F-7F3766489E44}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{576BEFA1-72B8-4CE8-964F-7F3766489E44}.Release|Any CPU.Build.0 = Release|Any CPU
+		{576BEFA1-72B8-4CE8-964F-7F3766489E44}.Release|x64.ActiveCfg = Release|Any CPU
+		{576BEFA1-72B8-4CE8-964F-7F3766489E44}.Release|x64.Build.0 = Release|Any CPU
+		{C8279835-C661-4852-B0EF-2E914008ADE8}.Debug|Any CPU.ActiveCfg = Debug
+		{C8279835-C661-4852-B0EF-2E914008ADE8}.Debug|x64.ActiveCfg = Debug
+		{C8279835-C661-4852-B0EF-2E914008ADE8}.Debug|x64.Build.0 = Debug
+		{C8279835-C661-4852-B0EF-2E914008ADE8}.Release|Any CPU.ActiveCfg = Release
+		{C8279835-C661-4852-B0EF-2E914008ADE8}.Release|Any CPU.Build.0 = Release
+		{C8279835-C661-4852-B0EF-2E914008ADE8}.Release|x64.ActiveCfg = Release
+		{C8279835-C661-4852-B0EF-2E914008ADE8}.Release|x64.Build.0 = Release
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
