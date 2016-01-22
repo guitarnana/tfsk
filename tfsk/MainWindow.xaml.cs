@@ -170,7 +170,11 @@ namespace tfsk
 			tbChangeComment.Text = changeset.Comment;
 
 			// Get all changes for this changeset
-			Change[] changes = versionControl.GetChangesForChangeset(changeset.ChangesetId, false, 10, null);
+			Change[] changes = versionControl.GetChangesForChangeset(
+				changeset.ChangesetId,
+				false, // includeDownloadInfo
+				Int32.MaxValue, // number of items to return
+				null); // return from start of this changeset
 
 			// Update list of change files
 			lvFiles.ItemsSource = changes;
