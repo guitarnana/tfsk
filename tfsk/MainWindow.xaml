@@ -25,10 +25,10 @@
 			</ListView.ItemContainerStyle>
 			<ListView.View>
 				<GridView>
-					<GridViewColumn Header="ChangesetID" Width="100" DisplayMemberBinding="{Binding ChangesetId}" />
+					<GridViewColumn Header="ID" Width="60" DisplayMemberBinding="{Binding ChangesetId}" />
 					<GridViewColumn Header="Commit Time" Width="150" DisplayMemberBinding="{Binding CreationDate}" />
-					<GridViewColumn Header="Committer" Width="100" DisplayMemberBinding="{Binding OwnerDisplayName}" />
-					<GridViewColumn Header="Message" Width="250" DisplayMemberBinding="{Binding Comment}" />
+					<GridViewColumn Header="Committer" Width="80" DisplayMemberBinding="{Binding OwnerDisplayName}" />
+					<GridViewColumn Header="Message" Width="500" DisplayMemberBinding="{Binding Comment}" />
 				</GridView>
 			</ListView.View>
 		</ListView>
