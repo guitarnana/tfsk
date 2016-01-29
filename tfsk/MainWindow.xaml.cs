@@ -7,7 +7,7 @@ using System.Windows.Documents;
 using System.Windows.Media;
 using System.Collections.ObjectModel;
 using System.IO;
-
+using System.Windows.Data;
 using Microsoft.TeamFoundation.Client;
 using Microsoft.TeamFoundation.VersionControl.Client;
 using Microsoft.TeamFoundation.VersionControl.Common;
@@ -21,6 +21,8 @@ namespace tfsk
 	public partial class MainWindow : Window
 	{
 		private readonly VersionControlServer versionControl;
+
+		private string[] excludeCommitters;
 
 		public MainWindow()
 		{
@@ -67,6 +69,8 @@ namespace tfsk
 
 			lvChangeset.ItemsSource = changesets;
 
+			CollectionViewSource.GetDefaultView(lvChangeset.ItemsSource).Filter = ChangeSetFilter;
+
 			UpdateUI(changesets[0]);
 		}
 
@@ -89,6 +93,11 @@ namespace tfsk
 				{
 					arguments.Add(args[i].Replace("-", ""), args[i+1]);
 				}
+				else if (String.Equals(args[i], "-excludeUser", StringComparison.OrdinalIgnoreCase))
+				{
+					excludeCommitters = args[i + 1].Split(';');
+					arguments.Add(args[i].Replace("-", ""), args[i + 1]);
+				}
 				else
 				{
 					success = false;
@@ -96,6 +105,30 @@ namespace tfsk
 			}
 
 			return success;
+		}
+
+		/// <summary>
+		/// Filter out user displayed in changeset listview 
+		/// </summary>
+		/// <param name="item"></param>
+		/// <returns>
+		/// True - if we want to display user
+		/// False - if we do not want to display user
+		/// </returns>
+		private bool ChangeSetFilter(object item)
+		{
+			if (excludeCommitters != null)
+			{
+				Changeset changeset = item as Changeset;
+				foreach (string committer in excludeCommitters)
+				{
+					if (changeset.OwnerDisplayName.Equals(committer))
+					{
+						return false;
+					}
+				}
+			}
+			return true;
 		}
 
 		private string DiffItemWithPrevVersion(VersionControlServer versionControl, Item item)
