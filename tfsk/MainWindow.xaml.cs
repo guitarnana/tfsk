@@ -192,6 +192,12 @@ namespace tfsk
 
 		private void UpdateUI(Changeset changeset)
 		{
+			// Update tfs server
+			tbTfsServer.Text = tfsUrl;
+			
+			// Update Path 
+			tbPath.Text = path;
+
 			// Update change comment
 			tbChangeComment.Text = changeset.Comment;
 

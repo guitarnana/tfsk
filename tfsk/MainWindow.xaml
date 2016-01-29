@@ -3,54 +3,73 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 	x:Class="tfsk.MainWindow"
         Title="tfsk" WindowStartupLocation="Manual" Width="1400" Height="900" >
-	<Grid>
-		<Grid.RowDefinitions>
-			<RowDefinition Height="4*" />
-			<RowDefinition Height="auto" />
-			<RowDefinition Height="6*" />
-		</Grid.RowDefinitions>
-		<Grid.ColumnDefinitions>
-			<ColumnDefinition Width="*"/>
-			<ColumnDefinition Width="auto" />
-			<ColumnDefinition Width="*"/>
-		</Grid.ColumnDefinitions>
+	<StackPanel>
+		<Grid>
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition Width="*"/>
+				<ColumnDefinition Width="*"/>
+			</Grid.ColumnDefinitions>
+			<DockPanel LastChildFill="True"
+					Grid.Column="0">
+				<Label DockPanel.Dock="Left" x:Name="labelServer" Width="45">Server</Label>
+				<TextBox x:Name="tbTfsServer"></TextBox>
+			</DockPanel>
+			<DockPanel LastChildFill="True"
+					Grid.Column="1">
+				<Label DockPanel.Dock="Left" x:Name="labelPath" Width="45">Path</Label>
+				<TextBox x:Name="tbPath"></TextBox>
+			</DockPanel>
+		</Grid>
+		<Separator Height="2" />
+		<Grid>
+			<Grid.RowDefinitions>
+				<RowDefinition Height="4*" />
+				<RowDefinition Height="auto" />
+				<RowDefinition Height="6*" />
+			</Grid.RowDefinitions>
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition Width="*"/>
+				<ColumnDefinition Width="auto" />
+				<ColumnDefinition Width="*"/>
+			</Grid.ColumnDefinitions>
 
-		<ListView Margin="5" Grid.Column="0" Grid.Row="0" Name="lvChangeset" SelectionMode="Single" 
+			<ListView Margin="5" Grid.Column="0" Grid.Row="0" Name="lvChangeset" SelectionMode="Single" 
 				  SelectionChanged="lvChangeset_SelectionChanged" SelectedIndex="0" >
-			<ListView.ItemContainerStyle>
-				<Style TargetType="ListViewItem">
-					<Setter Property="Height" Value="20" />
-					<Setter Property="VerticalContentAlignment" Value="Top" />
-				</Style>
-			</ListView.ItemContainerStyle>
-			<ListView.View>
-				<GridView>
-					<GridViewColumn Header="ID" Width="60" DisplayMemberBinding="{Binding ChangesetId}" />
-					<GridViewColumn Header="Commit Time" Width="150" DisplayMemberBinding="{Binding CreationDate}" />
-					<GridViewColumn Header="Committer" Width="80" DisplayMemberBinding="{Binding OwnerDisplayName}" />
-					<GridViewColumn Header="Message" Width="500" DisplayMemberBinding="{Binding Comment}" />
-				</GridView>
-			</ListView.View>
-		</ListView>
+				<ListView.ItemContainerStyle>
+					<Style TargetType="ListViewItem">
+						<Setter Property="Height" Value="20" />
+						<Setter Property="VerticalContentAlignment" Value="Top" />
+					</Style>
+				</ListView.ItemContainerStyle>
+				<ListView.View>
+					<GridView>
+						<GridViewColumn Header="ID" Width="60" DisplayMemberBinding="{Binding ChangesetId}" />
+						<GridViewColumn Header="Commit Time" Width="150" DisplayMemberBinding="{Binding CreationDate}" />
+						<GridViewColumn Header="Committer" Width="80" DisplayMemberBinding="{Binding OwnerDisplayName}" />
+						<GridViewColumn Header="Message" Width="500" DisplayMemberBinding="{Binding Comment}" />
+					</GridView>
+				</ListView.View>
+			</ListView>
 
-		<TextBox x:Name="tbChangeComment" Grid.Row="0" Grid.Column="2" Margin="5" Text="changecomment" 
+			<TextBox x:Name="tbChangeComment" Grid.Row="0" Grid.Column="2" Margin="5" Text="changecomment" 
 				 VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" IsReadOnly="True" FontFamily="Consolas" FontSize="14" TextWrapping="WrapWithOverflow" />
 
-		<ListView Margin="5" Grid.Row="2" Grid.Column="0" Name="lvFiles" SelectionMode="Single" 
+			<ListView Margin="5" Grid.Row="2" Grid.Column="0" Name="lvFiles" SelectionMode="Single" 
 				  SelectedIndex="0" SelectionChanged="lvFiles_SelectionChanged" >
-			<ListView.View>
-				<GridView>
-					<GridViewColumn Header="File" Width="400" DisplayMemberBinding="{Binding Item.ServerItem}" />
-					<GridViewColumn Header="Op" Width="70" DisplayMemberBinding="{Binding ChangeType}" />
-				</GridView>
-			</ListView.View>
-		</ListView>
+				<ListView.View>
+					<GridView>
+						<GridViewColumn Header="File" Width="400" DisplayMemberBinding="{Binding Item.ServerItem}" />
+						<GridViewColumn Header="Op" Width="70" DisplayMemberBinding="{Binding ChangeType}" />
+					</GridView>
+				</ListView.View>
+			</ListView>
 
-		<RichTextBox x:Name="rtbChangeDiff" Grid.Row="2" Grid.Column="2" Margin="5" 
+			<RichTextBox x:Name="rtbChangeDiff" Grid.Row="2" Grid.Column="2" Margin="5" 
 				 VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" IsReadOnly="True" FontFamily="Consolas" FontSize="14" />
 
-		<GridSplitter Grid.Column="1" Grid.RowSpan="3" Width="2" HorizontalAlignment="Center" />
-		<GridSplitter Grid.ColumnSpan="3" Grid.Row="1" Height="2" HorizontalAlignment="Stretch" VerticalAlignment="Center" ResizeDirection="Rows" />
-		
-	</Grid>
+			<GridSplitter Grid.Column="1" Grid.RowSpan="3" Width="2" HorizontalAlignment="Center" />
+			<GridSplitter Grid.ColumnSpan="3" Grid.Row="1" Height="2" HorizontalAlignment="Stretch" VerticalAlignment="Center" ResizeDirection="Rows" />
+
+		</Grid>
+	</StackPanel>
 </Window>
