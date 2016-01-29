@@ -22,50 +22,39 @@ namespace tfsk
 	{
 		private readonly VersionControlServer versionControl;
 
+		private string tfsUrl;
+		private string path;
+		private int numDisplay;
+		private VersionSpec[] versions;
 		private string[] excludeCommitters;
 
 		public MainWindow()
 		{
 			InitializeComponent();
 
-			Dictionary<string, string> arguments;
-
-			if (!ParseCommandlineArguments(out arguments))
+			if (!ParseCommandlineArguments())
 			{
 				// print usage
 				return;
 			}
 
-			string tfsUrl, path, numStr;
-			if (!arguments.TryGetValue("server", out tfsUrl))
-			{
-				Console.WriteLine("No server specify.");
-				return;
-			}
-
-			if (!arguments.TryGetValue("path", out path))
-			{
-				Console.WriteLine(@"No path specify.");
-				return;
-			}
-			
-			int numDisplay = 100;
-			if (arguments.TryGetValue("numdisplay", out numStr))
-			{
-				if (!Int32.TryParse(numStr, out numDisplay))
-				{
-					Console.WriteLine("Invalid num display. Default to 100.");
-				}
-			}
-			else
-			{
-				Console.WriteLine("Invalid num display. Default to 100.");
-			}
-
 			TfsTeamProjectCollection tpc = new TfsTeamProjectCollection(new Uri(tfsUrl));
 			versionControl = tpc.GetService<VersionControlServer>();
 
-			List<Changeset> changesets = versionControl.QueryHistory(path, RecursionType.Full, numDisplay).ToList();
+			QueryHistoryParameters queryHistoryParameter = new QueryHistoryParameters(path, RecursionType.Full);
+			queryHistoryParameter.MaxResults = numDisplay;
+
+			if (versions != null && versions.Length == 1)
+			{
+				queryHistoryParameter.VersionEnd = versions[0];
+			}
+			else if (versions != null && versions.Length == 2)
+			{
+				queryHistoryParameter.VersionStart = versions[0];
+				queryHistoryParameter.VersionEnd = versions[1];
+			}
+
+			List<Changeset> changesets = versionControl.QueryHistory(queryHistoryParameter).ToList();
 
 			lvChangeset.ItemsSource = changesets;
 
@@ -74,29 +63,34 @@ namespace tfsk
 			UpdateUI(changesets[0]);
 		}
 
-		private bool ParseCommandlineArguments(out Dictionary<string, string> arguments)
+		private bool ParseCommandlineArguments()
 		{
 			bool success = true;
-			arguments = new Dictionary<string, string>();
 			string[] args = Environment.GetCommandLineArgs();
 			for (int i = 1; i < args.Length; i += 2 )
 			{
 				if (String.Equals(args[i], "-server", StringComparison.OrdinalIgnoreCase))
 				{
-					arguments.Add(args[i].Replace("-", ""), args[i+1]);
+					tfsUrl = args[i + 1];
 				}
 				else if (String.Equals(args[i], "-path", StringComparison.OrdinalIgnoreCase))
 				{
-					arguments.Add(args[i].Replace("-", ""), args[i + 1]);
+					path = args[i + 1];
 				}
 				else if (String.Equals(args[i], "-numdisplay", StringComparison.OrdinalIgnoreCase))
 				{
-					arguments.Add(args[i].Replace("-", ""), args[i+1]);
+					if (!Int32.TryParse(args[i + 1], out numDisplay))
+					{
+						Console.WriteLine("Invalid num display. Default to 100.");
+					}
 				}
 				else if (String.Equals(args[i], "-excludeUser", StringComparison.OrdinalIgnoreCase))
 				{
 					excludeCommitters = args[i + 1].Split(';');
-					arguments.Add(args[i].Replace("-", ""), args[i + 1]);
+				}
+				else if (String.Equals(args[i], "-version", StringComparison.OrdinalIgnoreCase))
+				{
+					versions = VersionSpec.Parse(args[i + 1], null);
 				}
 				else
 				{
