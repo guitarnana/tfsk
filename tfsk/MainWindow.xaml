@@ -3,25 +3,65 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 	x:Class="tfsk.MainWindow"
         Title="tfsk" WindowStartupLocation="Manual" Width="1400" Height="900" >
-	<StackPanel>
-		<Grid>
+	<Grid>
+		<Grid.RowDefinitions>
+			<RowDefinition Height="30" />
+			<RowDefinition Height="30" />
+			<RowDefinition Height="10" />
+			<RowDefinition Height="*" />
+		</Grid.RowDefinitions>
+		
+		<Grid Grid.Row="0" Margin="2">
 			<Grid.ColumnDefinitions>
 				<ColumnDefinition Width="*"/>
-				<ColumnDefinition Width="*"/>
+				<ColumnDefinition Width="2*"/>
+				<ColumnDefinition Width="auto"/>
+				<ColumnDefinition Width="80"/>
+				<ColumnDefinition Width="50"/>
+				<ColumnDefinition Width="80"/>
 			</Grid.ColumnDefinitions>
 			<DockPanel LastChildFill="True"
 					Grid.Column="0">
-				<Label DockPanel.Dock="Left" x:Name="labelServer" Width="45">Server</Label>
-				<TextBox x:Name="tbTfsServer"></TextBox>
+				<Label DockPanel.Dock="Left" x:Name="labelServer" VerticalContentAlignment="Center" FontWeight="Bold">Server</Label>
+				<TextBox x:Name="tbTfsServer" VerticalContentAlignment="Center"></TextBox>
 			</DockPanel>
 			<DockPanel LastChildFill="True"
 					Grid.Column="1">
-				<Label DockPanel.Dock="Left" x:Name="labelPath" Width="45">Path</Label>
-				<TextBox x:Name="tbPath"></TextBox>
+				<Label DockPanel.Dock="Left" x:Name="labelPath" VerticalContentAlignment="Center" FontWeight="Bold">Path</Label>
+				<TextBox x:Name="tbPath" VerticalContentAlignment="Center" ></TextBox>
 			</DockPanel>
+			<StackPanel  Grid.Column="2" Orientation="Horizontal">
+				<Label VerticalContentAlignment="Center" FontWeight="Bold">Version Min</Label>
+				<TextBox Width="80" VerticalContentAlignment="Center"></TextBox>
+				<CheckBox VerticalContentAlignment="Center">No Min</CheckBox>
+				<Label VerticalContentAlignment="Center" VerticalAlignment="Center" FontWeight="Bold">Max</Label>
+				<TextBox Width="80" VerticalContentAlignment="Center"></TextBox>
+				<CheckBox VerticalContentAlignment="Center">Latest</CheckBox>
+			</StackPanel>
+			<Label Grid.Column="3" x:Name="labelNumQuery" VerticalContentAlignment="Center" FontWeight="Bold" >Num Query</Label>
+			<TextBox Grid.Column="4" x:Name="tbNumDisplay" VerticalContentAlignment="Center" ></TextBox>
+			<Button Grid.Column="5" Margin="5,0" >Query</Button>
 		</Grid>
-		<Separator Height="2" />
-		<Grid>
+		<Grid Grid.Row="1" Margin="2">
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition Width="*"/>
+				<ColumnDefinition Width="2*"/>
+				<ColumnDefinition Width="80"/>
+			</Grid.ColumnDefinitions>
+			<DockPanel LastChildFill="True"
+					Grid.Column="0">
+				<Label DockPanel.Dock="Left" VerticalContentAlignment="Center" FontWeight="Bold">Exclude User</Label>
+				<TextBox VerticalContentAlignment="Center"></TextBox>
+			</DockPanel>
+			<DockPanel LastChildFill="True"
+					Grid.Column="1">
+				<Label DockPanel.Dock="Left" VerticalContentAlignment="Center" FontWeight="Bold">Search</Label>
+				<TextBox VerticalContentAlignment="Center"></TextBox>
+			</DockPanel>
+			<Button Grid.Column="2" Margin="5,0">Filter</Button>
+		</Grid>
+		<Separator Grid.Row="2" Height="5" VerticalContentAlignment="Stretch"/> 
+		<Grid Grid.Row="3">
 			<Grid.RowDefinitions>
 				<RowDefinition Height="4*" />
 				<RowDefinition Height="auto" />
@@ -68,8 +108,8 @@
 				 VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" IsReadOnly="True" FontFamily="Consolas" FontSize="14" />
 
 			<GridSplitter Grid.Column="1" Grid.RowSpan="3" Width="2" HorizontalAlignment="Center" />
-			<GridSplitter Grid.ColumnSpan="3" Grid.Row="1" Height="2" HorizontalAlignment="Stretch" VerticalAlignment="Center" ResizeDirection="Rows" />
+			<GridSplitter Grid.ColumnSpan="3" Grid.Row="1" Height="2" HorizontalAlignment="Stretch" VerticalAlignment="Center" />
 
 		</Grid>
-	</StackPanel>
+	</Grid>
 </Window>
