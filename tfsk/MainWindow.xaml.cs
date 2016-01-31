@@ -251,6 +251,26 @@ namespace tfsk
 
 			return diffParagraph;
 		}
+
+		private void cbNoMin_Checked(object sender, RoutedEventArgs e)
+		{
+			tbVersionMin.IsEnabled = false;
+		}
+
+		private void cbNoMin_Unchecked(object sender, RoutedEventArgs e)
+		{
+			tbVersionMin.IsEnabled = true;
+		}
+
+		private void cbLatest_Checked(object sender, RoutedEventArgs e)
+		{
+			tbVersionMax.IsEnabled = false;
+		}
+
+		private void cbLatest_Unchecked(object sender, RoutedEventArgs e)
+		{
+			tbVersionMax.IsEnabled = true;
+		}
 	}
 
 	public class AddTextRun : Run

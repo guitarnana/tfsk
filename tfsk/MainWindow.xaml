@@ -16,7 +16,7 @@
 				<ColumnDefinition Width="*"/>
 				<ColumnDefinition Width="2*"/>
 				<ColumnDefinition Width="auto"/>
-				<ColumnDefinition Width="80"/>
+				<ColumnDefinition Width="auto"/>
 				<ColumnDefinition Width="50"/>
 				<ColumnDefinition Width="80"/>
 			</Grid.ColumnDefinitions>
@@ -33,12 +33,12 @@
 			<StackPanel  Grid.Column="2" Orientation="Horizontal">
 				<Label VerticalContentAlignment="Center" FontWeight="Bold">Version Min</Label>
 				<TextBox x:Name="tbVersionMin" Width="80" VerticalContentAlignment="Center"></TextBox>
-				<CheckBox x:Name="cbNoMin" VerticalContentAlignment="Center">No Min</CheckBox>
+				<CheckBox x:Name="cbNoMin" VerticalContentAlignment="Center" Checked="cbNoMin_Checked" Unchecked="cbNoMin_Unchecked">No Min</CheckBox>
 				<Label VerticalContentAlignment="Center" VerticalAlignment="Center" FontWeight="Bold">Max</Label>
 				<TextBox x:Name="tbVersionMax" Width="80" VerticalContentAlignment="Center"></TextBox>
 				<CheckBox x:Name="cbLatest" VerticalContentAlignment="Center">Latest</CheckBox>
 			</StackPanel>
-			<Label Grid.Column="3" x:Name="labelNumQuery" VerticalContentAlignment="Center" FontWeight="Bold" >Num Query</Label>
+			<Label Grid.Column="3" x:Name="labelNumQuery" VerticalContentAlignment="Center" FontWeight="Bold" >Num History</Label>
 			<TextBox Grid.Column="4" x:Name="tbNumDisplay" VerticalContentAlignment="Center" ></TextBox>
 			<Button x:Name="btQuery" Grid.Column="5" Margin="5,0" >Query</Button>
 		</Grid>
