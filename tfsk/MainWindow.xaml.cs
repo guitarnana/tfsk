@@ -20,7 +20,7 @@ namespace tfsk
 	/// </summary>
 	public partial class MainWindow : Window
 	{
-		private readonly VersionControlServer versionControl;
+		private VersionControlServer versionControl;
 
 		private string tfsUrl;
 		private string path;
@@ -44,12 +44,17 @@ namespace tfsk
 				return;
 			}
 
-			TfsTeamProjectCollection tpc = new TfsTeamProjectCollection(new Uri(tfsUrl));
-			versionControl = tpc.GetService<VersionControlServer>();
+			UpdateVersionControl();
 
 			List<Changeset> changesets = QueryChangeset();
 			UpdateChangesetSource(changesets);
 			UpdateUI(changesets[0]);
+		}
+
+		private void UpdateVersionControl()
+		{
+			TfsTeamProjectCollection tpc = new TfsTeamProjectCollection(new Uri(tfsUrl));
+			versionControl = tpc.GetService<VersionControlServer>();
 		}
 
 		private List<Changeset> QueryChangeset()
@@ -153,7 +158,7 @@ namespace tfsk
 			return true;
 		}
 
-		private string DiffItemWithPrevVersion(VersionControlServer versionControl, Item item)
+		private string DiffItemWithPrevVersion(Item item)
 		{
 			string diffStr = "";
 
@@ -282,7 +287,7 @@ namespace tfsk
 		private void UpdateChangeDiffBox(Change change)
 		{
 			rtbChangeDiff.Document.Blocks.Clear();
-			rtbChangeDiff.Document.Blocks.Add(CreateDiffTextForDisplay(DiffItemWithPrevVersion(versionControl, change.Item)));
+			rtbChangeDiff.Document.Blocks.Add(CreateDiffTextForDisplay(DiffItemWithPrevVersion(change.Item)));
 		}
 
 		Paragraph CreateDiffTextForDisplay(string diffText)
@@ -347,14 +352,20 @@ namespace tfsk
 
 		private void btQuery_Click(object sender, RoutedEventArgs e)
 		{
+			if (!tfsUrl.Equals(tbTfsServer.Text))
+			{
+				tfsUrl = tbTfsServer.Text;
+				UpdateVersionControl();
+			}
+
+			path = tbPath.Text;
+
 			VersionSpec ver = VersionSpec.ParseSingleSpec(tbVersionMin.Text, null);
 			versionStart = ver;
 
 			ver = VersionSpec.ParseSingleSpec(tbVersionMax.Text, null);
 			versionEnd = ver;
 
-			path = tbPath.Text;
-			tfsUrl = tbTfsServer.Text;
 			numDisplay = Int32.Parse(tbNumDisplay.Text);
 
 			List<Changeset> changesets = QueryChangeset();
