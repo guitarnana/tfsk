@@ -25,9 +25,9 @@ namespace tfsk
 		private string tfsUrl;
 		private string path;
 		private int numDisplay;
-		//private VersionSpec[] versions;
 		private VersionSpec versionStart;
 		private VersionSpec versionEnd;
+
 		private string[] excludeCommitters;
 		private bool getLatestVersion;
 		private bool noMinVersion;
@@ -347,7 +347,8 @@ namespace tfsk
 
 		private void btFilter_Click(object sender, RoutedEventArgs e)
 		{
-
+			excludeCommitters = tbExcludeCommitter.Text.Split(';');
+			CollectionViewSource.GetDefaultView(lvChangeset.ItemsSource).Refresh();
 		}
 
 		private void btQuery_Click(object sender, RoutedEventArgs e)
