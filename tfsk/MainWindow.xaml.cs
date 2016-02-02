@@ -48,11 +48,7 @@ namespace tfsk
 			versionControl = tpc.GetService<VersionControlServer>();
 
 			List<Changeset> changesets = QueryChangeset();
-
-			lvChangeset.ItemsSource = changesets;
-
-			CollectionViewSource.GetDefaultView(lvChangeset.ItemsSource).Filter = ChangeSetFilter;
-
+			UpdateChangesetSource(changesets);
 			UpdateUI(changesets[0]);
 		}
 
@@ -222,6 +218,12 @@ namespace tfsk
 			}
 		}
 
+		private void UpdateChangesetSource(List<Changeset> changesets)
+		{
+			lvChangeset.ItemsSource = changesets;
+			CollectionViewSource.GetDefaultView(lvChangeset.ItemsSource).Filter = ChangeSetFilter;
+		}
+
 		private void UpdateUI(Changeset changeset)
 		{
 			// Update tfs server
@@ -345,7 +347,19 @@ namespace tfsk
 
 		private void btQuery_Click(object sender, RoutedEventArgs e)
 		{
+			VersionSpec ver = VersionSpec.ParseSingleSpec(tbVersionMin.Text, null);
+			versionStart = ver;
 
+			ver = VersionSpec.ParseSingleSpec(tbVersionMax.Text, null);
+			versionEnd = ver;
+
+			path = tbPath.Text;
+			tfsUrl = tbTfsServer.Text;
+			numDisplay = Int32.Parse(tbNumDisplay.Text);
+
+			List<Changeset> changesets = QueryChangeset();
+			UpdateChangesetSource(changesets);
+			UpdateUI(changesets[0]);
 		}
 	}
 
