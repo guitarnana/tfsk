@@ -25,12 +25,18 @@ namespace tfsk
 		private string tfsUrl;
 		private string path;
 		private int numDisplay;
-		private VersionSpec[] versions;
+		//private VersionSpec[] versions;
+		private VersionSpec versionStart;
+		private VersionSpec versionEnd;
 		private string[] excludeCommitters;
+		private bool getLatestVersion;
+		private bool noMinVersion;
 
 		public MainWindow()
 		{
 			InitializeComponent();
+
+			Init();
 
 			if (!ParseCommandlineArguments())
 			{
@@ -41,26 +47,39 @@ namespace tfsk
 			TfsTeamProjectCollection tpc = new TfsTeamProjectCollection(new Uri(tfsUrl));
 			versionControl = tpc.GetService<VersionControlServer>();
 
-			QueryHistoryParameters queryHistoryParameter = new QueryHistoryParameters(path, RecursionType.Full);
-			queryHistoryParameter.MaxResults = numDisplay;
-
-			if (versions != null && versions.Length == 1)
-			{
-				queryHistoryParameter.VersionEnd = versions[0];
-			}
-			else if (versions != null && versions.Length == 2)
-			{
-				queryHistoryParameter.VersionStart = versions[0];
-				queryHistoryParameter.VersionEnd = versions[1];
-			}
-
-			List<Changeset> changesets = versionControl.QueryHistory(queryHistoryParameter).ToList();
+			List<Changeset> changesets = QueryChangeset();
 
 			lvChangeset.ItemsSource = changesets;
 
 			CollectionViewSource.GetDefaultView(lvChangeset.ItemsSource).Filter = ChangeSetFilter;
 
 			UpdateUI(changesets[0]);
+		}
+
+		private List<Changeset> QueryChangeset()
+		{
+			QueryHistoryParameters queryHistoryParameter = new QueryHistoryParameters(path, RecursionType.Full);
+			queryHistoryParameter.MaxResults = numDisplay;
+
+			if (!noMinVersion)
+			{
+				queryHistoryParameter.VersionStart = versionStart;
+			}
+
+			if (!getLatestVersion)
+			{
+				queryHistoryParameter.VersionEnd = versionEnd;
+			}
+
+			List<Changeset> changesets = versionControl.QueryHistory(queryHistoryParameter).ToList();
+			return changesets;
+		}
+
+		private void Init()
+		{
+			noMinVersion = true;
+			getLatestVersion = true;
+			numDisplay = 100;
 		}
 
 		private bool ParseCommandlineArguments()
@@ -90,7 +109,20 @@ namespace tfsk
 				}
 				else if (String.Equals(args[i], "-version", StringComparison.OrdinalIgnoreCase))
 				{
-					versions = VersionSpec.Parse(args[i + 1], null);
+					VersionSpec[] versions = VersionSpec.Parse(args[i + 1], null);
+
+					if (versions != null && versions.Length == 1)
+					{
+						versionEnd = versions[0];
+						getLatestVersion = false;
+					}
+					else if (versions != null && versions.Length == 2)
+					{
+						versionStart = versions[0];
+						versionEnd = versions[1];
+						getLatestVersion = false;
+						noMinVersion = false;
+					}
 				}
 				else
 				{
@@ -198,6 +230,15 @@ namespace tfsk
 			// Update Path 
 			tbPath.Text = path;
 
+			// Update Version
+			UpdateVersionUI();
+
+			// Update num display
+			tbNumDisplay.Text = numDisplay.ToString();
+
+			// Update exclude committer
+			tbExcludeCommitter.Text = String.Join(";", excludeCommitters);
+
 			// Update change comment
 			tbChangeComment.Text = changeset.Comment;
 
@@ -213,6 +254,27 @@ namespace tfsk
 
 			// Update diff to show the first file of the change			
 			UpdateChangeDiffBox(changes[0]);
+		}
+
+		private void UpdateVersionUI()
+		{
+			if (noMinVersion)
+			{
+				cbNoMin.IsChecked = true;
+			}
+			else
+			{
+				tbVersionMin.Text = versionStart.DisplayString;
+			}
+
+			if (getLatestVersion)
+			{
+				cbLatest.IsChecked = true;
+			}
+			else
+			{
+				tbVersionMax.Text = versionEnd.DisplayString;
+			}
 		}
 
 		private void UpdateChangeDiffBox(Change change)
@@ -255,21 +317,35 @@ namespace tfsk
 		private void cbNoMin_Checked(object sender, RoutedEventArgs e)
 		{
 			tbVersionMin.IsEnabled = false;
+			noMinVersion = true;
 		}
 
 		private void cbNoMin_Unchecked(object sender, RoutedEventArgs e)
 		{
 			tbVersionMin.IsEnabled = true;
+			noMinVersion = false;
 		}
 
 		private void cbLatest_Checked(object sender, RoutedEventArgs e)
 		{
 			tbVersionMax.IsEnabled = false;
+			getLatestVersion = true;
 		}
 
 		private void cbLatest_Unchecked(object sender, RoutedEventArgs e)
 		{
 			tbVersionMax.IsEnabled = true;
+			getLatestVersion = false;
+		}
+
+		private void btFilter_Click(object sender, RoutedEventArgs e)
+		{
+
+		}
+
+		private void btQuery_Click(object sender, RoutedEventArgs e)
+		{
+
 		}
 	}
 

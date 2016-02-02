@@ -32,15 +32,15 @@
 			</DockPanel>
 			<StackPanel  Grid.Column="2" Orientation="Horizontal">
 				<Label VerticalContentAlignment="Center" FontWeight="Bold">Version Min</Label>
-				<TextBox x:Name="tbVersionMin" Width="80" VerticalContentAlignment="Center"></TextBox>
+				<TextBox x:Name="tbVersionMin" Width="90" VerticalContentAlignment="Center"></TextBox>
 				<CheckBox x:Name="cbNoMin" VerticalContentAlignment="Center" Checked="cbNoMin_Checked" Unchecked="cbNoMin_Unchecked">No Min</CheckBox>
 				<Label VerticalContentAlignment="Center" VerticalAlignment="Center" FontWeight="Bold">Max</Label>
-				<TextBox x:Name="tbVersionMax" Width="80" VerticalContentAlignment="Center"></TextBox>
-				<CheckBox x:Name="cbLatest" VerticalContentAlignment="Center">Latest</CheckBox>
+				<TextBox x:Name="tbVersionMax" Width="90" VerticalContentAlignment="Center"></TextBox>
+				<CheckBox x:Name="cbLatest" VerticalContentAlignment="Center" Unchecked="cbLatest_Unchecked" Checked="cbLatest_Checked">Latest</CheckBox>
 			</StackPanel>
 			<Label Grid.Column="3" x:Name="labelNumQuery" VerticalContentAlignment="Center" FontWeight="Bold" >Num History</Label>
 			<TextBox Grid.Column="4" x:Name="tbNumDisplay" VerticalContentAlignment="Center" ></TextBox>
-			<Button x:Name="btQuery" Grid.Column="5" Margin="5,0" >Query</Button>
+			<Button x:Name="btQuery" Grid.Column="5" Margin="5,0" Click="btQuery_Click" >Query</Button>
 		</Grid>
 		<Grid Grid.Row="1" Margin="2">
 			<Grid.ColumnDefinitions>
@@ -50,15 +50,15 @@
 			</Grid.ColumnDefinitions>
 			<DockPanel LastChildFill="True"
 					Grid.Column="0">
-				<Label DockPanel.Dock="Left" VerticalContentAlignment="Center" FontWeight="Bold">Exclude User</Label>
-				<TextBox x:Name="tbExcludeUser" VerticalContentAlignment="Center"></TextBox>
+				<Label DockPanel.Dock="Left" VerticalContentAlignment="Center" FontWeight="Bold" Content="Exclude Committer"/>
+				<TextBox x:Name="tbExcludeCommitter" VerticalContentAlignment="Center"></TextBox>
 			</DockPanel>
 			<DockPanel LastChildFill="True"
 					Grid.Column="1">
 				<Label DockPanel.Dock="Left" VerticalContentAlignment="Center" FontWeight="Bold">Search</Label>
 				<TextBox x:Name="tbSearchComment" VerticalContentAlignment="Center"></TextBox>
 			</DockPanel>
-			<Button x:Name="btFilter" Grid.Column="2" Margin="5,0">Filter</Button>
+			<Button x:Name="btFilter" Grid.Column="2" Margin="5,0" Click="btFilter_Click">Filter</Button>
 		</Grid>
 		<Separator Grid.Row="2" Height="5" VerticalContentAlignment="Stretch"/> 
 		<Grid Grid.Row="3">
