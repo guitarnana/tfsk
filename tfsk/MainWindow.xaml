@@ -98,8 +98,8 @@
 				  SelectedIndex="0" SelectionChanged="lvFiles_SelectionChanged" >
 				<ListView.View>
 					<GridView>
-						<GridViewColumn Header="File" Width="400" DisplayMemberBinding="{Binding Item.ServerItem}" />
-						<GridViewColumn Header="Op" Width="70" DisplayMemberBinding="{Binding ChangeType}" />
+						<GridViewColumn Header="File" Width="500" DisplayMemberBinding="{Binding Item.ServerItem}" />
+						<GridViewColumn Header="Op" Width="100" DisplayMemberBinding="{Binding ChangeType}" />
 					</GridView>
 				</ListView.View>
 			</ListView>
