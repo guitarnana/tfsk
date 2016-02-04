@@ -56,7 +56,7 @@
 			<DockPanel LastChildFill="True"
 					Grid.Column="1">
 				<Label DockPanel.Dock="Left" VerticalContentAlignment="Center" FontWeight="Bold">Search Message</Label>
-				<TextBox x:Name="tbSearchComment" VerticalContentAlignment="Center"></TextBox>
+				<TextBox x:Name="tbSearchMessage" VerticalContentAlignment="Center"></TextBox>
 			</DockPanel>
 			<Button x:Name="btFilter" Grid.Column="2" Margin="5,0" Click="btFilter_Click">Filter</Button>
 		</Grid>

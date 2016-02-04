@@ -7,6 +7,7 @@ using System.Windows.Documents;
 using System.Windows.Media;
 using System.Collections.ObjectModel;
 using System.IO;
+using System.Text.RegularExpressions;
 using System.Windows.Data;
 using Microsoft.TeamFoundation.Client;
 using Microsoft.TeamFoundation.VersionControl.Client;
@@ -31,6 +32,7 @@ namespace tfsk
 		private string[] excludeUsers;
 		private bool getLatestVersion;
 		private bool noMinVersion;
+		private string searchMessage;
 
 		public MainWindow()
 		{
@@ -144,18 +146,28 @@ namespace tfsk
 		/// </returns>
 		private bool ChangeSetFilter(object item)
 		{
+			bool display = true;
+			Changeset changeset = item as Changeset;
 			if (excludeUsers != null)
 			{
-				Changeset changeset = item as Changeset;
 				foreach (string user in excludeUsers)
 				{
 					if (changeset.OwnerDisplayName.Equals(user))
 					{
-						return false;
+						display = false;
 					}
 				}
 			}
-			return true;
+
+			if (!String.IsNullOrEmpty(searchMessage))
+			{
+				Match match = Regex.Match(changeset.Comment, searchMessage, RegexOptions.IgnoreCase);
+				if (!match.Success)
+				{
+					display = false;
+				}
+			}
+			return display;
 		}
 
 		private string DiffItemWithPrevVersion(Item item)
@@ -350,6 +362,7 @@ namespace tfsk
 
 		private void btFilter_Click(object sender, RoutedEventArgs e)
 		{
+			searchMessage = tbSearchMessage.Text;
 			excludeUsers = tbExcludeUser.Text.Split(';');
 			CollectionViewSource.GetDefaultView(lvChangeset.ItemsSource).Refresh();
 		}
