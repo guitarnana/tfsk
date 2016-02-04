@@ -50,8 +50,8 @@
 			</Grid.ColumnDefinitions>
 			<DockPanel LastChildFill="True"
 					Grid.Column="0">
-				<Label DockPanel.Dock="Left" VerticalContentAlignment="Center" FontWeight="Bold" Content="Exclude Committer"/>
-				<TextBox x:Name="tbExcludeCommitter" VerticalContentAlignment="Center"></TextBox>
+				<Label DockPanel.Dock="Left" VerticalContentAlignment="Center" FontWeight="Bold" Content="Exclude Users"/>
+				<TextBox x:Name="tbExcludeUser" VerticalContentAlignment="Center"></TextBox>
 			</DockPanel>
 			<DockPanel LastChildFill="True"
 					Grid.Column="1">

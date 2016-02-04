@@ -28,7 +28,7 @@ namespace tfsk
 		private VersionSpec versionStart;
 		private VersionSpec versionEnd;
 
-		private string[] excludeCommitters;
+		private string[] excludeUsers;
 		private bool getLatestVersion;
 		private bool noMinVersion;
 
@@ -106,7 +106,7 @@ namespace tfsk
 				}
 				else if (String.Equals(args[i], "-excludeUser", StringComparison.OrdinalIgnoreCase))
 				{
-					excludeCommitters = args[i + 1].Split(';');
+					excludeUsers = args[i + 1].Split(';');
 				}
 				else if (String.Equals(args[i], "-version", StringComparison.OrdinalIgnoreCase))
 				{
@@ -144,12 +144,12 @@ namespace tfsk
 		/// </returns>
 		private bool ChangeSetFilter(object item)
 		{
-			if (excludeCommitters != null)
+			if (excludeUsers != null)
 			{
 				Changeset changeset = item as Changeset;
-				foreach (string committer in excludeCommitters)
+				foreach (string user in excludeUsers)
 				{
-					if (changeset.OwnerDisplayName.Equals(committer))
+					if (changeset.OwnerDisplayName.Equals(user))
 					{
 						return false;
 					}
@@ -244,9 +244,9 @@ namespace tfsk
 			tbNumDisplay.Text = numDisplay.ToString();
 
 			// Update exclude committer
-			if (excludeCommitters != null)
+			if (excludeUsers != null)
 			{
-				tbExcludeCommitter.Text = String.Join(";", excludeCommitters);
+				tbExcludeUser.Text = String.Join(";", excludeUsers);
 			}
 
 			// Update change comment
@@ -350,7 +350,7 @@ namespace tfsk
 
 		private void btFilter_Click(object sender, RoutedEventArgs e)
 		{
-			excludeCommitters = tbExcludeCommitter.Text.Split(';');
+			excludeUsers = tbExcludeUser.Text.Split(';');
 			CollectionViewSource.GetDefaultView(lvChangeset.ItemsSource).Refresh();
 		}
 
