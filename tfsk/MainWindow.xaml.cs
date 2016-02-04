@@ -244,7 +244,10 @@ namespace tfsk
 			tbNumDisplay.Text = numDisplay.ToString();
 
 			// Update exclude committer
-			tbExcludeCommitter.Text = String.Join(";", excludeCommitters);
+			if (excludeCommitters != null)
+			{
+				tbExcludeCommitter.Text = String.Join(";", excludeCommitters);
+			}
 
 			// Update change comment
 			tbChangeComment.Text = changeset.Comment;
