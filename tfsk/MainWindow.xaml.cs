@@ -9,6 +9,7 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Text.RegularExpressions;
 using System.Windows.Data;
+using System.Windows.Input;
 using Microsoft.TeamFoundation.Client;
 using Microsoft.TeamFoundation.VersionControl.Client;
 using Microsoft.TeamFoundation.VersionControl.Common;
@@ -369,6 +370,11 @@ namespace tfsk
 
 		private void btQuery_Click(object sender, RoutedEventArgs e)
 		{
+			RefreshHistory();
+		}
+
+		private void RefreshHistory()
+		{
 			if (!tfsUrl.Equals(tbTfsServer.Text))
 			{
 				tfsUrl = tbTfsServer.Text;
@@ -377,17 +383,59 @@ namespace tfsk
 
 			path = tbPath.Text;
 
-			VersionSpec ver = VersionSpec.ParseSingleSpec(tbVersionMin.Text, null);
-			versionStart = ver;
+			if (cbNoMin.IsChecked.HasValue &&
+				!cbNoMin.IsChecked.Value &&
+				!String.IsNullOrEmpty(tbVersionMin.Text))
+			{
+				try
+				{
+					VersionSpec ver = VersionSpec.ParseSingleSpec(tbVersionMin.Text, null);
+					versionStart = ver;
+				}
+				catch (Exception e)
+				{
+					MessageBox.Show(this, e.ToString());
+					noMinVersion = true;
+				}
+			}
+			else
+			{
+				noMinVersion = true;
+			}
 
-			ver = VersionSpec.ParseSingleSpec(tbVersionMax.Text, null);
-			versionEnd = ver;
+			if (cbLatest.IsChecked.HasValue &&
+				!cbLatest.IsChecked.Value &&
+				!String.IsNullOrEmpty(tbVersionMax.Text))
+			{
+				try
+				{
+					VersionSpec ver = VersionSpec.ParseSingleSpec(tbVersionMax.Text, null);
+					versionEnd = ver;
+				}
+				catch (Exception e)
+				{
+					MessageBox.Show(this, e.ToString());
+					getLatestVersion = true;
+				}
+			}
+			else
+			{
+				getLatestVersion = true;
+			}
 
 			numDisplay = Int32.Parse(tbNumDisplay.Text);
 
 			List<Changeset> changesets = QueryChangeset();
 			UpdateChangesetSource(changesets);
-			UpdateUI(changesets[0]);
+			if (changesets.Count > 0)
+			{
+				UpdateUI(changesets[0]);
+			}
+		}
+
+		private void RefreshOnExecuted(object sender, ExecutedRoutedEventArgs e)
+		{
+			RefreshHistory();
 		}
 	}
 

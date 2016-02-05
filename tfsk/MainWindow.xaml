@@ -3,6 +3,9 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 	x:Class="tfsk.MainWindow"
         Title="tfsk" WindowStartupLocation="Manual" Width="1400" Height="900" >
+	<Window.CommandBindings>
+		<CommandBinding Command="NavigationCommands.Refresh" Executed="RefreshOnExecuted" />
+	</Window.CommandBindings>
 	<Grid>
 		<Grid.RowDefinitions>
 			<RowDefinition Height="30" />
@@ -18,7 +21,7 @@
 				<ColumnDefinition Width="auto"/>
 				<ColumnDefinition Width="auto"/>
 				<ColumnDefinition Width="50"/>
-				<ColumnDefinition Width="80"/>
+				<ColumnDefinition Width="90"/>
 			</Grid.ColumnDefinitions>
 			<DockPanel LastChildFill="True"
 					Grid.Column="0">
@@ -40,25 +43,25 @@
 			</StackPanel>
 			<Label Grid.Column="3" x:Name="labelNumQuery" VerticalContentAlignment="Center" FontWeight="Bold" >Num History</Label>
 			<TextBox Grid.Column="4" x:Name="tbNumDisplay" VerticalContentAlignment="Center" ></TextBox>
-			<Button x:Name="btQuery" Grid.Column="5" Margin="5,0" Click="btQuery_Click" >Query</Button>
+			<Button x:Name="btQuery" Grid.Column="5" Margin="5,0" Click="btQuery_Click" Content="Query (F5)" />
 		</Grid>
 		<Grid Grid.Row="1" Margin="2">
 			<Grid.ColumnDefinitions>
 				<ColumnDefinition Width="*"/>
 				<ColumnDefinition Width="2*"/>
-				<ColumnDefinition Width="80"/>
+				<ColumnDefinition Width="90"/>
 			</Grid.ColumnDefinitions>
 			<DockPanel LastChildFill="True"
 					Grid.Column="0">
 				<Label DockPanel.Dock="Left" VerticalContentAlignment="Center" FontWeight="Bold" Content="Exclude Users"/>
-				<TextBox x:Name="tbExcludeUser" VerticalContentAlignment="Center"></TextBox>
+				<TextBox x:Name="tbExcludeUser" VerticalContentAlignment="Center" ToolTip="Each user is separated by semicolon (example -  UserA;UserB;UserC)"></TextBox>
 			</DockPanel>
 			<DockPanel LastChildFill="True"
 					Grid.Column="1">
 				<Label DockPanel.Dock="Left" VerticalContentAlignment="Center" FontWeight="Bold">Search Message</Label>
-				<TextBox x:Name="tbSearchMessage" VerticalContentAlignment="Center"></TextBox>
+				<TextBox x:Name="tbSearchMessage" VerticalContentAlignment="Center" ToolTip="Support Regex"></TextBox>
 			</DockPanel>
-			<Button x:Name="btFilter" Grid.Column="2" Margin="5,0" Click="btFilter_Click">Filter</Button>
+			<Button x:Name="btFilter" Grid.Column="2" Margin="5,0" Click="btFilter_Click" IsDefault="True" Content="Filter (Enter)"/>
 		</Grid>
 		<Separator Grid.Row="2" Height="5" VerticalContentAlignment="Stretch"/> 
 		<Grid Grid.Row="3">
