@@ -8,8 +8,8 @@ namespace tfsk
 {
 	public class DiffRichTextBox : RichTextBox
 	{
-		public static readonly DependencyProperty ChangeDiffStringProperty =
-			DependencyProperty.Register("ChangeDiffString",
+		public static readonly DependencyProperty ChangeDiffProperty =
+			DependencyProperty.Register("ChangeDiff",
 			typeof(string),
 			typeof(DiffRichTextBox),
 			new PropertyMetadata(new PropertyChangedCallback(DiffDocumentChanged)));
@@ -20,14 +20,14 @@ namespace tfsk
 			if (rtbBox != null)
 			{
 				rtbBox.Document.Blocks.Clear();
-				rtbBox.Document.Blocks.Add(rtbBox.CreateDiffTextForDisplay(rtbBox.ChangeDiffString));
+				rtbBox.Document.Blocks.Add(rtbBox.CreateDiffTextForDisplay(rtbBox.ChangeDiff));
 			}
 		}
 
-		public string ChangeDiffString
+		public string ChangeDiff
 		{
-			get { return GetValue(ChangeDiffStringProperty) as string; }
-			set { SetValue(ChangeDiffStringProperty, value); }
+			get { return GetValue(ChangeDiffProperty) as string; }
+			set { SetValue(ChangeDiffProperty, value); }
 		}
 
 		public Paragraph CreateDiffTextForDisplay(string diffText)
