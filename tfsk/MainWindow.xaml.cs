@@ -1,17 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Media;
-using System.Collections.ObjectModel;
-using System.IO;
+using System.Text.RegularExpressions;
 using System.Windows.Data;
-using Microsoft.TeamFoundation.Client;
+using System.Windows.Input;
 using Microsoft.TeamFoundation.VersionControl.Client;
-using Microsoft.TeamFoundation.VersionControl.Common;
-
 
 namespace tfsk
 {
@@ -20,83 +16,72 @@ namespace tfsk
 	/// </summary>
 	public partial class MainWindow : Window
 	{
-		private readonly VersionControlServer versionControl;
-
-		private string[] excludeCommitters;
+		private readonly VersionControl versionControl;
 
 		public MainWindow()
 		{
 			InitializeComponent();
 
-			Dictionary<string, string> arguments;
+			versionControl = new VersionControl();
 
-			if (!ParseCommandlineArguments(out arguments))
+			if (ParseCommandlineArguments())
 			{
-				// print usage
-				return;
-			}
+				versionControl.UpdateVersionControl();
 
-			string tfsUrl, path, numStr;
-			if (!arguments.TryGetValue("server", out tfsUrl))
-			{
-				Console.WriteLine("No server specify.");
-				return;
-			}
-
-			if (!arguments.TryGetValue("path", out path))
-			{
-				Console.WriteLine(@"No path specify.");
-				return;
-			}
-			
-			int numDisplay = 100;
-			if (arguments.TryGetValue("numdisplay", out numStr))
-			{
-				if (!Int32.TryParse(numStr, out numDisplay))
-				{
-					Console.WriteLine("Invalid num display. Default to 100.");
-				}
+				List<Changeset> changesets = versionControl.QueryChangeset();
+				UpdateChangesetSource(changesets);
+				UpdateUI(changesets[0]);
 			}
 			else
 			{
-				Console.WriteLine("Invalid num display. Default to 100.");
+				UsageWindow usageWindow = new UsageWindow();
+				usageWindow.Show();
+				Close();
 			}
-
-			TfsTeamProjectCollection tpc = new TfsTeamProjectCollection(new Uri(tfsUrl));
-			versionControl = tpc.GetService<VersionControlServer>();
-
-			List<Changeset> changesets = versionControl.QueryHistory(path, RecursionType.Full, numDisplay).ToList();
-
-			lvChangeset.ItemsSource = changesets;
-
-			CollectionViewSource.GetDefaultView(lvChangeset.ItemsSource).Filter = ChangeSetFilter;
-
-			UpdateUI(changesets[0]);
 		}
 
-		private bool ParseCommandlineArguments(out Dictionary<string, string> arguments)
+		private bool ParseCommandlineArguments()
 		{
 			bool success = true;
-			arguments = new Dictionary<string, string>();
 			string[] args = Environment.GetCommandLineArgs();
 			for (int i = 1; i < args.Length; i += 2 )
 			{
 				if (String.Equals(args[i], "-server", StringComparison.OrdinalIgnoreCase))
 				{
-					arguments.Add(args[i].Replace("-", ""), args[i+1]);
+					Properties.Settings.Default.TFSUrl = args[i + 1];
 				}
 				else if (String.Equals(args[i], "-path", StringComparison.OrdinalIgnoreCase))
 				{
-					arguments.Add(args[i].Replace("-", ""), args[i + 1]);
+					versionControl.FilePath = args[i + 1];
 				}
 				else if (String.Equals(args[i], "-numdisplay", StringComparison.OrdinalIgnoreCase))
 				{
-					arguments.Add(args[i].Replace("-", ""), args[i+1]);
+					int numDisplay;
+					if (Int32.TryParse(args[i + 1], out numDisplay))
+					{
+						versionControl.NumDisplay = numDisplay;
+					}
 				}
 				else if (String.Equals(args[i], "-excludeUser", StringComparison.OrdinalIgnoreCase))
 				{
-					excludeCommitters = args[i + 1].Split(';');
-					arguments.Add(args[i].Replace("-", ""), args[i + 1]);
+					versionControl.ExcludeUsers = args[i + 1].Split(';');
+				}
+				else if (String.Equals(args[i], "-version", StringComparison.OrdinalIgnoreCase))
+				{
+					VersionSpec[] versions = VersionSpec.Parse(args[i + 1], null);
+
+					if (versions != null && versions.Length == 1)
+					{
+						versionControl.VersionMax = versions[0];
+						versionControl.GetLatestVersion = false;
+					}
+					else if (versions != null && versions.Length == 2)
+					{
+						versionControl.VersionMin = versions[0];
+						versionControl.VersionMax = versions[1];
+						versionControl.GetLatestVersion = false;
+						versionControl.NoMinVersion = false;
+					}
 				}
 				else
 				{
@@ -104,72 +89,19 @@ namespace tfsk
 				}
 			}
 
+			if (String.IsNullOrEmpty(Properties.Settings.Default.TFSUrl))
+			{
+				MessageBox.Show("TFS Server URL is empty. Please set it using -server <tfsurl>");
+				success = false;
+			}
+
+			if (String.IsNullOrEmpty(versionControl.FilePath))
+			{
+				MessageBox.Show("File path is empty. Please set it using -path <file or directory>");
+				success = false;
+			}
+
 			return success;
-		}
-
-		/// <summary>
-		/// Filter out user displayed in changeset listview 
-		/// </summary>
-		/// <param name="item"></param>
-		/// <returns>
-		/// True - if we want to display user
-		/// False - if we do not want to display user
-		/// </returns>
-		private bool ChangeSetFilter(object item)
-		{
-			if (excludeCommitters != null)
-			{
-				Changeset changeset = item as Changeset;
-				foreach (string committer in excludeCommitters)
-				{
-					if (changeset.OwnerDisplayName.Equals(committer))
-					{
-						return false;
-					}
-				}
-			}
-			return true;
-		}
-
-		private string DiffItemWithPrevVersion(VersionControlServer versionControl, Item item)
-		{
-			string diffStr = "";
-
-			// Get previous version item
-			//
-			Item prevItem = versionControl.GetItem(item.ItemId, item.ChangesetId - 1);
-			if (prevItem != null)
-			{
-				DiffItemVersionedFile curFile = new DiffItemVersionedFile(versionControl, item.ItemId, item.ChangesetId, null);
-				DiffItemVersionedFile prevFile = new DiffItemVersionedFile(versionControl, prevItem.ItemId, prevItem.ChangesetId, null);
-
-				// Create memory stream for buffering diff output in memory
-				//
-				MemoryStream memStream = new MemoryStream();
-
-				// Here we set up the options to show the diffs in the console with the unified diff 
-				// format.
-				DiffOptions options = new DiffOptions();
-				options.UseThirdPartyTool = false;
-
-				// These settings are just for the text diff (not needed for an external tool). 
-				options.Flags = DiffOptionFlags.EnablePreambleHandling | DiffOptionFlags.IgnoreWhiteSpace;
-				options.OutputType = DiffOutputType.Unified;
-				options.TargetEncoding = Console.OutputEncoding;
-				options.SourceEncoding = Console.OutputEncoding;
-				options.StreamWriter = new StreamWriter(memStream);
-				options.StreamWriter.AutoFlush = true;
-
-				Difference.DiffFiles(versionControl, prevFile, curFile, options, prevItem.ServerItem, true);
-
-				// Move to the beginning of the stream for reading.
-				memStream.Seek(0, SeekOrigin.Begin);
-
-				StreamReader sr = new StreamReader(memStream);
-				diffStr = sr.ReadToEnd();
-			}
-
-			return diffStr;
 		}
 
 		private void lvChangeset_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -196,25 +128,106 @@ namespace tfsk
 			}
 		}
 
+		private void UpdateChangesetSource(List<Changeset> changesets)
+		{
+			lvChangeset.ItemsSource = changesets;
+			CollectionViewSource.GetDefaultView(lvChangeset.ItemsSource).Filter = ChangeSetFilter;
+		}
+
+		/// <summary>
+		/// Filter out user displayed in changeset listview 
+		/// </summary>
+		/// <param name="item"></param>
+		/// <returns>
+		/// True - if we want to display user
+		/// False - if we do not want to display user
+		/// </returns>
+		private bool ChangeSetFilter(object item)
+		{
+			bool display = true;
+			Changeset changeset = item as Changeset;
+			string[] excludeUsers = versionControl.ExcludeUsers;
+			if (excludeUsers != null)
+			{
+				foreach (string user in excludeUsers)
+				{
+					if (changeset.OwnerDisplayName.Equals(user))
+					{
+						display = false;
+					}
+				}
+			}
+
+			string searchKeyword = tbSearchMessage.Text;
+			if (!String.IsNullOrEmpty(searchKeyword))
+			{
+				Match match = Regex.Match(changeset.Comment, searchKeyword, RegexOptions.IgnoreCase);
+				if (!match.Success)
+				{
+					display = false;
+				}
+			}
+			return display;
+		}
+
 		private void UpdateUI(Changeset changeset)
 		{
+			// Update tfs server
+			tbTfsServer.Text = Properties.Settings.Default.TFSUrl;
+			
+			// Update Path 
+			tbPath.Text = versionControl.FilePath;
+
+			// Update Version
+			UpdateVersionUI();
+
+			// Update num display
+			tbNumDisplay.Text = versionControl.NumDisplay.ToString();
+
+			// Update exclude committer
+			if (versionControl.ExcludeUsers != null)
+			{
+				tbExcludeUser.Text = String.Join(";", versionControl.ExcludeUsers);
+			}
+
 			// Update change comment
 			tbChangeComment.Text = changeset.Comment;
 
 			// Get all changes for this changeset
-			Change[] changes = versionControl.GetChangesForChangeset(changeset.ChangesetId, false, 10, null);
+			Change[] changes = versionControl.GetChangesForChangeset(changeset.ChangesetId);
 
 			// Update list of change files
 			lvFiles.ItemsSource = changes;
 
-			// Update diff to show the first file of the change			
+			// Update diff to show the first file of the change
 			UpdateChangeDiffBox(changes[0]);
+		}
+
+		private void UpdateVersionUI()
+		{
+			if (versionControl.NoMinVersion)
+			{
+				cbNoMin.IsChecked = true;
+			}
+			else
+			{
+				tbVersionMin.Text = versionControl.VersionMin.DisplayString;
+			}
+
+			if (versionControl.GetLatestVersion)
+			{
+				cbLatest.IsChecked = true;
+			}
+			else
+			{
+				tbVersionMax.Text = versionControl.VersionMax.DisplayString;
+			}
 		}
 
 		private void UpdateChangeDiffBox(Change change)
 		{
 			rtbChangeDiff.Document.Blocks.Clear();
-			rtbChangeDiff.Document.Blocks.Add(CreateDiffTextForDisplay(DiffItemWithPrevVersion(versionControl, change.Item)));
+			rtbChangeDiff.Document.Blocks.Add(CreateDiffTextForDisplay(versionControl.DiffItemWithPrevVersion(change.Item)));
 		}
 
 		Paragraph CreateDiffTextForDisplay(string diffText)
@@ -246,6 +259,96 @@ namespace tfsk
 			}
 
 			return diffParagraph;
+		}
+
+		private void cbNoMin_Checked(object sender, RoutedEventArgs e)
+		{
+			tbVersionMin.IsEnabled = false;
+			versionControl.NoMinVersion = true;
+		}
+
+		private void cbNoMin_Unchecked(object sender, RoutedEventArgs e)
+		{
+			tbVersionMin.IsEnabled = true;
+			versionControl.NoMinVersion = false;
+		}
+
+		private void cbLatest_Checked(object sender, RoutedEventArgs e)
+		{
+			tbVersionMax.IsEnabled = false;
+			versionControl.GetLatestVersion = true;
+		}
+
+		private void cbLatest_Unchecked(object sender, RoutedEventArgs e)
+		{
+			tbVersionMax.IsEnabled = true;
+			versionControl.GetLatestVersion = false;
+		}
+
+		private void btFilter_Click(object sender, RoutedEventArgs e)
+		{
+			versionControl.ExcludeUsers = tbExcludeUser.Text.Split(';');
+			CollectionViewSource.GetDefaultView(lvChangeset.ItemsSource).Refresh();
+		}
+
+		private void btQuery_Click(object sender, RoutedEventArgs e)
+		{
+			RefreshHistory();
+		}
+
+		private void RefreshOnExecuted(object sender, ExecutedRoutedEventArgs e)
+		{
+			RefreshHistory();
+		}
+
+		private void RefreshHistory()
+		{
+			if (!Properties.Settings.Default.TFSUrl.Equals(tbTfsServer.Text))
+			{
+				Properties.Settings.Default.TFSUrl = tbTfsServer.Text;
+			}
+
+			versionControl.FilePath = tbPath.Text;
+
+			int numDisplay;
+			if (Int32.TryParse(tbNumDisplay.Text, out numDisplay))
+			{
+				versionControl.NumDisplay = numDisplay;
+			}
+
+			versionControl.NoMinVersion = true;
+
+			if (cbNoMin.IsChecked.HasValue &&
+				!cbNoMin.IsChecked.Value &&
+				!String.IsNullOrEmpty(tbVersionMin.Text))
+			{
+				versionControl.VersionMin = VersionSpec.ParseSingleSpec(tbVersionMin.Text, null);
+				versionControl.NoMinVersion = false;
+			}
+
+			versionControl.GetLatestVersion = true;
+
+			if (cbLatest.IsChecked.HasValue &&
+				!cbLatest.IsChecked.Value &&
+				!String.IsNullOrEmpty(tbVersionMax.Text))
+			{
+				versionControl.VersionMax = VersionSpec.ParseSingleSpec(tbVersionMax.Text, null);
+				versionControl.GetLatestVersion = false;
+			}
+
+			// Query changeset from version control
+			//
+			List<Changeset> changesets = versionControl.QueryChangeset();
+			UpdateChangesetSource(changesets);
+			if (changesets.Count > 0)
+			{
+				UpdateUI(changesets[0]);
+			}
+		}
+
+		private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+		{
+			Properties.Settings.Default.Save();
 		}
 	}
 

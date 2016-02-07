@@ -2,55 +2,117 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 	x:Class="tfsk.MainWindow"
-        Title="tfsk" WindowStartupLocation="Manual" Width="1400" Height="900" >
+        Title="tfsk" WindowStartupLocation="Manual" Width="1400" Height="900" Closing="Window_Closing" >
+	<Window.CommandBindings>
+		<CommandBinding Command="NavigationCommands.Refresh" Executed="RefreshOnExecuted" />
+	</Window.CommandBindings>
 	<Grid>
 		<Grid.RowDefinitions>
-			<RowDefinition Height="4*" />
-			<RowDefinition Height="auto" />
-			<RowDefinition Height="6*" />
+			<RowDefinition Height="30" />
+			<RowDefinition Height="30" />
+			<RowDefinition Height="10" />
+			<RowDefinition Height="*" />
 		</Grid.RowDefinitions>
-		<Grid.ColumnDefinitions>
-			<ColumnDefinition Width="*"/>
-			<ColumnDefinition Width="auto" />
-			<ColumnDefinition Width="*"/>
-		</Grid.ColumnDefinitions>
+		
+		<Grid Grid.Row="0" Margin="2">
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition Width="*"/>
+				<ColumnDefinition Width="2*"/>
+				<ColumnDefinition Width="auto"/>
+				<ColumnDefinition Width="auto"/>
+				<ColumnDefinition Width="50"/>
+				<ColumnDefinition Width="90"/>
+			</Grid.ColumnDefinitions>
+			<DockPanel LastChildFill="True"
+					Grid.Column="0">
+				<Label DockPanel.Dock="Left" x:Name="labelServer" VerticalContentAlignment="Center" FontWeight="Bold">Server</Label>
+				<TextBox x:Name="tbTfsServer" VerticalContentAlignment="Center"></TextBox>
+			</DockPanel>
+			<DockPanel LastChildFill="True"
+					Grid.Column="1">
+				<Label DockPanel.Dock="Left" x:Name="labelPath" VerticalContentAlignment="Center" FontWeight="Bold">Path</Label>
+				<TextBox x:Name="tbPath" VerticalContentAlignment="Center" ></TextBox>
+			</DockPanel>
+			<StackPanel  Grid.Column="2" Orientation="Horizontal">
+				<Label VerticalContentAlignment="Center" FontWeight="Bold">Version Min</Label>
+				<TextBox x:Name="tbVersionMin" Width="90" VerticalContentAlignment="Center"></TextBox>
+				<CheckBox x:Name="cbNoMin" VerticalContentAlignment="Center" Checked="cbNoMin_Checked" Unchecked="cbNoMin_Unchecked">No Min</CheckBox>
+				<Label VerticalContentAlignment="Center" VerticalAlignment="Center" FontWeight="Bold">Max</Label>
+				<TextBox x:Name="tbVersionMax" Width="90" VerticalContentAlignment="Center"></TextBox>
+				<CheckBox x:Name="cbLatest" VerticalContentAlignment="Center" Unchecked="cbLatest_Unchecked" Checked="cbLatest_Checked">Latest</CheckBox>
+			</StackPanel>
+			<Label Grid.Column="3" x:Name="labelNumQuery" VerticalContentAlignment="Center" FontWeight="Bold" >Num History</Label>
+			<TextBox Grid.Column="4" x:Name="tbNumDisplay" VerticalContentAlignment="Center" ></TextBox>
+			<Button x:Name="btQuery" Grid.Column="5" Margin="5,0" Click="btQuery_Click" Content="Query (F5)" />
+		</Grid>
+		<Grid Grid.Row="1" Margin="2">
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition Width="*"/>
+				<ColumnDefinition Width="2*"/>
+				<ColumnDefinition Width="90"/>
+			</Grid.ColumnDefinitions>
+			<DockPanel LastChildFill="True"
+					Grid.Column="0">
+				<Label DockPanel.Dock="Left" VerticalContentAlignment="Center" FontWeight="Bold" Content="Exclude Users"/>
+				<TextBox x:Name="tbExcludeUser" VerticalContentAlignment="Center" ToolTip="Each user is separated by semicolon (example -  UserA;UserB;UserC)"></TextBox>
+			</DockPanel>
+			<DockPanel LastChildFill="True"
+					Grid.Column="1">
+				<Label DockPanel.Dock="Left" VerticalContentAlignment="Center" FontWeight="Bold">Search Message</Label>
+				<TextBox x:Name="tbSearchMessage" VerticalContentAlignment="Center" ToolTip="Support Regex"></TextBox>
+			</DockPanel>
+			<Button x:Name="btFilter" Grid.Column="2" Margin="5,0" Click="btFilter_Click" IsDefault="True" Content="Filter (Enter)"/>
+		</Grid>
+		<Separator Grid.Row="2" Height="5" VerticalContentAlignment="Stretch"/> 
+		<Grid Grid.Row="3">
+			<Grid.RowDefinitions>
+				<RowDefinition Height="4*" />
+				<RowDefinition Height="auto" />
+				<RowDefinition Height="6*" />
+			</Grid.RowDefinitions>
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition Width="*"/>
+				<ColumnDefinition Width="auto" />
+				<ColumnDefinition Width="*"/>
+			</Grid.ColumnDefinitions>
 
-		<ListView Margin="5" Grid.Column="0" Grid.Row="0" Name="lvChangeset" SelectionMode="Single" 
+			<ListView Margin="5" Grid.Column="0" Grid.Row="0" Name="lvChangeset" SelectionMode="Single" 
 				  SelectionChanged="lvChangeset_SelectionChanged" SelectedIndex="0" >
-			<ListView.ItemContainerStyle>
-				<Style TargetType="ListViewItem">
-					<Setter Property="Height" Value="20" />
-					<Setter Property="VerticalContentAlignment" Value="Top" />
-				</Style>
-			</ListView.ItemContainerStyle>
-			<ListView.View>
-				<GridView>
-					<GridViewColumn Header="ChangesetID" Width="100" DisplayMemberBinding="{Binding ChangesetId}" />
-					<GridViewColumn Header="Commit Time" Width="150" DisplayMemberBinding="{Binding CreationDate}" />
-					<GridViewColumn Header="Committer" Width="100" DisplayMemberBinding="{Binding OwnerDisplayName}" />
-					<GridViewColumn Header="Message" Width="250" DisplayMemberBinding="{Binding Comment}" />
-				</GridView>
-			</ListView.View>
-		</ListView>
+				<ListView.ItemContainerStyle>
+					<Style TargetType="ListViewItem">
+						<Setter Property="Height" Value="20" />
+						<Setter Property="VerticalContentAlignment" Value="Top" />
+					</Style>
+				</ListView.ItemContainerStyle>
+				<ListView.View>
+					<GridView>
+						<GridViewColumn Header="ID" Width="60" DisplayMemberBinding="{Binding ChangesetId}" />
+						<GridViewColumn Header="Commit Time" Width="150" DisplayMemberBinding="{Binding CreationDate}" />
+						<GridViewColumn Header="Committer" Width="80" DisplayMemberBinding="{Binding OwnerDisplayName}" />
+						<GridViewColumn Header="Message" Width="500" DisplayMemberBinding="{Binding Comment}" />
+					</GridView>
+				</ListView.View>
+			</ListView>
 
-		<TextBox x:Name="tbChangeComment" Grid.Row="0" Grid.Column="2" Margin="5" Text="changecomment" 
+			<TextBox x:Name="tbChangeComment" Grid.Row="0" Grid.Column="2" Margin="5" Text="changecomment" 
 				 VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" IsReadOnly="True" FontFamily="Consolas" FontSize="14" TextWrapping="WrapWithOverflow" />
 
-		<ListView Margin="5" Grid.Row="2" Grid.Column="0" Name="lvFiles" SelectionMode="Single" 
+			<ListView Margin="5" Grid.Row="2" Grid.Column="0" Name="lvFiles" SelectionMode="Single" 
 				  SelectedIndex="0" SelectionChanged="lvFiles_SelectionChanged" >
-			<ListView.View>
-				<GridView>
-					<GridViewColumn Header="File" Width="400" DisplayMemberBinding="{Binding Item.ServerItem}" />
-					<GridViewColumn Header="Op" Width="70" DisplayMemberBinding="{Binding ChangeType}" />
-				</GridView>
-			</ListView.View>
-		</ListView>
+				<ListView.View>
+					<GridView>
+						<GridViewColumn Header="File" Width="500" DisplayMemberBinding="{Binding Item.ServerItem}" />
+						<GridViewColumn Header="Op" Width="100" DisplayMemberBinding="{Binding ChangeType}" />
+					</GridView>
+				</ListView.View>
+			</ListView>
 
-		<RichTextBox x:Name="rtbChangeDiff" Grid.Row="2" Grid.Column="2" Margin="5" 
+			<RichTextBox x:Name="rtbChangeDiff" Grid.Row="2" Grid.Column="2" Margin="5" 
 				 VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" IsReadOnly="True" FontFamily="Consolas" FontSize="14" />
 
-		<GridSplitter Grid.Column="1" Grid.RowSpan="3" Width="2" HorizontalAlignment="Center" />
-		<GridSplitter Grid.ColumnSpan="3" Grid.Row="1" Height="2" HorizontalAlignment="Stretch" VerticalAlignment="Center" ResizeDirection="Rows" />
-		
+			<GridSplitter Grid.Column="1" Grid.RowSpan="3" Width="2" HorizontalAlignment="Center" />
+			<GridSplitter Grid.ColumnSpan="3" Grid.Row="1" Height="2" HorizontalAlignment="Stretch" VerticalAlignment="Center" />
+
+		</Grid>
 	</Grid>
 </Window>
