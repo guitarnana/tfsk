@@ -1,19 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Media;
-using System.Collections.ObjectModel;
-using System.IO;
 using System.Text.RegularExpressions;
 using System.Windows.Data;
 using System.Windows.Input;
-using Microsoft.TeamFoundation.Client;
 using Microsoft.TeamFoundation.VersionControl.Client;
-using Microsoft.TeamFoundation.VersionControl.Common;
-
 
 namespace tfsk
 {
@@ -30,15 +24,20 @@ namespace tfsk
 
 			versionControl = new VersionControl();
 
-			if (!ParseCommandlineArguments())
+			if (ParseCommandlineArguments())
 			{
-				// print usage
-				return;
-			}
+				versionControl.UpdateVersionControl();
 
-			List<Changeset> changesets = versionControl.QueryChangeset();
-			UpdateChangesetSource(changesets);
-			UpdateUI(changesets[0]);
+				List<Changeset> changesets = versionControl.QueryChangeset();
+				UpdateChangesetSource(changesets);
+				UpdateUI(changesets[0]);
+			}
+			else
+			{
+				UsageWindow usageWindow = new UsageWindow();
+				usageWindow.Show();
+				Close();
+			}
 		}
 
 		private bool ParseCommandlineArguments()
@@ -49,7 +48,7 @@ namespace tfsk
 			{
 				if (String.Equals(args[i], "-server", StringComparison.OrdinalIgnoreCase))
 				{
-					versionControl.TfsUrl = args[i + 1];
+					Properties.Settings.Default.TFSUrl = args[i + 1];
 				}
 				else if (String.Equals(args[i], "-path", StringComparison.OrdinalIgnoreCase))
 				{
@@ -61,9 +60,6 @@ namespace tfsk
 					if (Int32.TryParse(args[i + 1], out numDisplay))
 					{
 						versionControl.NumDisplay = numDisplay;
-					}
-					{
-						Console.WriteLine("Invalid num display. Default to 100.");
 					}
 				}
 				else if (String.Equals(args[i], "-excludeUser", StringComparison.OrdinalIgnoreCase))
@@ -91,6 +87,18 @@ namespace tfsk
 				{
 					success = false;
 				}
+			}
+
+			if (String.IsNullOrEmpty(Properties.Settings.Default.TFSUrl))
+			{
+				MessageBox.Show("TFS Server URL is empty. Please set it using -server <tfsurl>");
+				success = false;
+			}
+
+			if (String.IsNullOrEmpty(versionControl.FilePath))
+			{
+				MessageBox.Show("File path is empty. Please set it using -path <file or directory>");
+				success = false;
 			}
 
 			return success;
@@ -165,7 +173,7 @@ namespace tfsk
 		private void UpdateUI(Changeset changeset)
 		{
 			// Update tfs server
-			tbTfsServer.Text = versionControl.TfsUrl;
+			tbTfsServer.Text = Properties.Settings.Default.TFSUrl;
 			
 			// Update Path 
 			tbPath.Text = versionControl.FilePath;
@@ -191,7 +199,7 @@ namespace tfsk
 			// Update list of change files
 			lvFiles.ItemsSource = changes;
 
-			// Update diff to show the first file of the change			
+			// Update diff to show the first file of the change
 			UpdateChangeDiffBox(changes[0]);
 		}
 
@@ -295,13 +303,18 @@ namespace tfsk
 
 		private void RefreshHistory()
 		{
-			if (!versionControl.TfsUrl.Equals(tbTfsServer.Text))
+			if (!Properties.Settings.Default.TFSUrl.Equals(tbTfsServer.Text))
 			{
-				versionControl.TfsUrl = tbTfsServer.Text;
+				Properties.Settings.Default.TFSUrl = tbTfsServer.Text;
 			}
 
 			versionControl.FilePath = tbPath.Text;
-			versionControl.NumDisplay = Int32.Parse(tbNumDisplay.Text);
+
+			int numDisplay;
+			if (Int32.TryParse(tbNumDisplay.Text, out numDisplay))
+			{
+				versionControl.NumDisplay = numDisplay;
+			}
 
 			versionControl.NoMinVersion = true;
 
@@ -331,6 +344,11 @@ namespace tfsk
 			{
 				UpdateUI(changesets[0]);
 			}
+		}
+
+		private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+		{
+			Properties.Settings.Default.Save();
 		}
 	}
 
