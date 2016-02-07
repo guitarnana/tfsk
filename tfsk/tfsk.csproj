@@ -113,10 +113,10 @@
     </ApplicationDefinition>
     <Compile Include="MainWindowViewModel.cs" />
     <Compile Include="Properties\Annotations.cs" />
+    <Compile Include="RichTextBoxHelper.cs" />
     <Compile Include="UsageWindow.xaml.cs">
       <DependentUpon>UsageWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="VersionControl.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

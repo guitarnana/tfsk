@@ -14,6 +14,8 @@ using Microsoft.TeamFoundation.Client;
 using Microsoft.TeamFoundation.MVVM;
 using Microsoft.TeamFoundation.VersionControl.Client;
 using Microsoft.TeamFoundation.VersionControl.Common;
+using System.Windows.Documents;
+using System.Windows.Media;
 using tfsk.Annotations;
 
 namespace tfsk
@@ -98,6 +100,11 @@ namespace tfsk
 			set
 			{
 				_changes = value;
+
+				if (_changes.Length > 0)
+				{
+					SelectedChange = _changes[0];
+				}
 				NotifyPropertyChanged();
 			}
 		}
@@ -112,9 +119,28 @@ namespace tfsk
 					return;
 
 				_selectedChange = value;
+
+				if (_selectedChange != null)
+				{
+					FlowDocument diff = new FlowDocument();
+					diff.Blocks.Add(CreateDiffTextForDisplay(DiffItemWithPrevVersion(_selectedChange.Item)));
+					DiffDocument = diff;
+				}
 			}
 		}
 
+		private FlowDocument _diffDocument;
+
+		public FlowDocument DiffDocument
+		{
+			get { return _diffDocument; }
+			set
+			{
+				_diffDocument = value; 
+				NotifyPropertyChanged();
+			}
+		}
+		
 		public MainWindowViewModel()
 		{
 			Init();
@@ -324,6 +350,64 @@ namespace tfsk
 			}
 
 			return diffStr;
+		}
+
+		Paragraph CreateDiffTextForDisplay(string diffText)
+		{
+			Paragraph diffParagraph = new Paragraph();
+
+			string[] lines = diffText.Split(new string[] { "\n", "\r\n" }, StringSplitOptions.None);
+
+			foreach (string line in lines)
+			{
+				if (line.StartsWith("+"))
+				{
+					diffParagraph.Inlines.Add(new AddTextRun(line));
+				}
+				else if (line.StartsWith("-"))
+				{
+					diffParagraph.Inlines.Add(new DeleteTextRun(line));
+				}
+				else if (line.StartsWith("@@"))
+				{
+					diffParagraph.Inlines.Add(new LineBreak());
+					diffParagraph.Inlines.Add(new LineNumberTextRun(line));
+				}
+				else
+				{
+					diffParagraph.Inlines.Add(new Run(line));
+				}
+				diffParagraph.Inlines.Add(new LineBreak());
+			}
+
+			return diffParagraph;
+		}
+	}
+
+	public class AddTextRun : Run
+	{
+		public AddTextRun(string text)
+			: base(text)
+		{
+			this.Foreground = Brushes.Green;
+		}
+	}
+
+	public class DeleteTextRun : Run
+	{
+		public DeleteTextRun(string text)
+			: base(text)
+		{
+			this.Foreground = Brushes.Red;
+		}
+	}
+
+	public class LineNumberTextRun : Run
+	{
+		public LineNumberTextRun(string text)
+			: base(text)
+		{
+			this.Foreground = Brushes.Blue;
 		}
 	}
 }

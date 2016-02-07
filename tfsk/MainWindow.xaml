@@ -133,12 +133,12 @@
 				</ListView.View>
 			</ListView>
 
-			<RichTextBox x:Name="rtbChangeDiff" Grid.Row="2" Grid.Column="2" Margin="5" 
+			<tfsk:DiffRichTextBox x:Name="rtbChangeDiff" Grid.Row="2" Grid.Column="2" Margin="5" 
 						 VerticalScrollBarVisibility="Auto" 
 						 HorizontalScrollBarVisibility="Auto" 
 						 IsReadOnly="True" 
-						 FontFamily="Consolas" FontSize="14" >
-			</RichTextBox>
+						 FontFamily="Consolas" FontSize="14" 
+						 DiffDocument="{Binding DiffDocument}" />
 
 			<GridSplitter Grid.Column="1" Grid.RowSpan="3" Width="2" HorizontalAlignment="Center" />
 			<GridSplitter Grid.ColumnSpan="3" Grid.Row="1" Height="2" HorizontalAlignment="Stretch" VerticalAlignment="Center" />
