@@ -1,21 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
-using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
 using Microsoft.TeamFoundation.Client;
 using Microsoft.TeamFoundation.MVVM;
 using Microsoft.TeamFoundation.VersionControl.Client;
 using Microsoft.TeamFoundation.VersionControl.Common;
-using System.Windows.Documents;
-using System.Windows.Media;
 using tfsk.Annotations;
 
 namespace tfsk
@@ -122,21 +117,19 @@ namespace tfsk
 
 				if (_selectedChange != null)
 				{
-					FlowDocument diff = new FlowDocument();
-					diff.Blocks.Add(CreateDiffTextForDisplay(DiffItemWithPrevVersion(_selectedChange.Item)));
-					DiffDocument = diff;
+					ChangeDiff = DiffItemWithPrevVersion(_selectedChange.Item);
 				}
 			}
 		}
 
-		private FlowDocument _diffDocument;
+		private string _changeDiff;
 
-		public FlowDocument DiffDocument
+		public string ChangeDiff
 		{
-			get { return _diffDocument; }
+			get { return _changeDiff; }
 			set
 			{
-				_diffDocument = value; 
+				_changeDiff = value; 
 				NotifyPropertyChanged();
 			}
 		}
@@ -273,24 +266,27 @@ namespace tfsk
 		{
 			bool display = true;
 			Changeset changeset = item as Changeset;
-			string[] excludeUsers = ExcludeUsers;
-			if (excludeUsers != null)
+			if (changeset != null)
 			{
-				foreach (string user in excludeUsers)
+				string[] excludeUsers = ExcludeUsers;
+				if (excludeUsers != null)
 				{
-					if (changeset.OwnerDisplayName.Equals(user))
+					foreach (string user in excludeUsers)
+					{
+						if (changeset.OwnerDisplayName.Equals(user))
+						{
+							display = false;
+						}
+					}
+				}
+
+				if (!String.IsNullOrEmpty(SearchKeyword))
+				{
+					Match match = Regex.Match(changeset.Comment, SearchKeyword, RegexOptions.IgnoreCase);
+					if (!match.Success)
 					{
 						display = false;
 					}
-				}
-			}
-
-			if (!String.IsNullOrEmpty(SearchKeyword))
-			{
-				Match match = Regex.Match(changeset.Comment, SearchKeyword, RegexOptions.IgnoreCase);
-				if (!match.Success)
-				{
-					display = false;
 				}
 			}
 			return display;
@@ -352,62 +348,5 @@ namespace tfsk
 			return diffStr;
 		}
 
-		Paragraph CreateDiffTextForDisplay(string diffText)
-		{
-			Paragraph diffParagraph = new Paragraph();
-
-			string[] lines = diffText.Split(new string[] { "\n", "\r\n" }, StringSplitOptions.None);
-
-			foreach (string line in lines)
-			{
-				if (line.StartsWith("+"))
-				{
-					diffParagraph.Inlines.Add(new AddTextRun(line));
-				}
-				else if (line.StartsWith("-"))
-				{
-					diffParagraph.Inlines.Add(new DeleteTextRun(line));
-				}
-				else if (line.StartsWith("@@"))
-				{
-					diffParagraph.Inlines.Add(new LineBreak());
-					diffParagraph.Inlines.Add(new LineNumberTextRun(line));
-				}
-				else
-				{
-					diffParagraph.Inlines.Add(new Run(line));
-				}
-				diffParagraph.Inlines.Add(new LineBreak());
-			}
-
-			return diffParagraph;
-		}
-	}
-
-	public class AddTextRun : Run
-	{
-		public AddTextRun(string text)
-			: base(text)
-		{
-			this.Foreground = Brushes.Green;
-		}
-	}
-
-	public class DeleteTextRun : Run
-	{
-		public DeleteTextRun(string text)
-			: base(text)
-		{
-			this.Foreground = Brushes.Red;
-		}
-	}
-
-	public class LineNumberTextRun : Run
-	{
-		public LineNumberTextRun(string text)
-			: base(text)
-		{
-			this.Foreground = Brushes.Blue;
-		}
 	}
 }

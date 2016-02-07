@@ -113,7 +113,7 @@
     </ApplicationDefinition>
     <Compile Include="MainWindowViewModel.cs" />
     <Compile Include="Properties\Annotations.cs" />
-    <Compile Include="RichTextBoxHelper.cs" />
+    <Compile Include="DiffRichTextBox.cs" />
     <Compile Include="UsageWindow.xaml.cs">
       <DependentUpon>UsageWindow.xaml</DependentUpon>
     </Compile>
