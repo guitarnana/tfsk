@@ -23,7 +23,7 @@ namespace tfsk
 			InitializeComponent();
 
 			versionControl = new VersionControl();
-
+			/*
 			if (ParseCommandlineArguments())
 			{
 				versionControl.UpdateVersionControl();
@@ -37,95 +37,7 @@ namespace tfsk
 				UsageWindow usageWindow = new UsageWindow();
 				usageWindow.Show();
 				Close();
-			}
-		}
-
-		private bool ParseCommandlineArguments()
-		{
-			bool success = true;
-			string[] args = Environment.GetCommandLineArgs();
-			for (int i = 1; i < args.Length; i += 2 )
-			{
-				if (String.Equals(args[i], "-server", StringComparison.OrdinalIgnoreCase))
-				{
-					Properties.Settings.Default.TFSUrl = args[i + 1];
-				}
-				else if (String.Equals(args[i], "-path", StringComparison.OrdinalIgnoreCase))
-				{
-					versionControl.FilePath = args[i + 1];
-				}
-				else if (String.Equals(args[i], "-numdisplay", StringComparison.OrdinalIgnoreCase))
-				{
-					int numDisplay;
-					if (Int32.TryParse(args[i + 1], out numDisplay))
-					{
-						versionControl.NumDisplay = numDisplay;
-					}
-				}
-				else if (String.Equals(args[i], "-excludeUser", StringComparison.OrdinalIgnoreCase))
-				{
-					versionControl.ExcludeUsers = args[i + 1].Split(';');
-				}
-				else if (String.Equals(args[i], "-version", StringComparison.OrdinalIgnoreCase))
-				{
-					VersionSpec[] versions = VersionSpec.Parse(args[i + 1], null);
-
-					if (versions != null && versions.Length == 1)
-					{
-						versionControl.VersionMax = versions[0];
-						versionControl.GetLatestVersion = false;
-					}
-					else if (versions != null && versions.Length == 2)
-					{
-						versionControl.VersionMin = versions[0];
-						versionControl.VersionMax = versions[1];
-						versionControl.GetLatestVersion = false;
-						versionControl.NoMinVersion = false;
-					}
-				}
-				else
-				{
-					success = false;
-				}
-			}
-
-			if (String.IsNullOrEmpty(Properties.Settings.Default.TFSUrl))
-			{
-				MessageBox.Show("TFS Server URL is empty. Please set it using -server <tfsurl>");
-				success = false;
-			}
-
-			if (String.IsNullOrEmpty(versionControl.FilePath))
-			{
-				MessageBox.Show("File path is empty. Please set it using -path <file or directory>");
-				success = false;
-			}
-
-			return success;
-		}
-
-		private void lvChangeset_SelectionChanged(object sender, SelectionChangedEventArgs e)
-		{
-			if (e.AddedItems.Count > 0)
-			{
-				Changeset changeset = e.AddedItems[0] as Changeset;
-				if (changeset != null)
-				{
-					UpdateUI(changeset);
-				}
-			}
-		}
-
-		private void lvFiles_SelectionChanged(object sender, SelectionChangedEventArgs e)
-		{
-			if (e.AddedItems.Count > 0)
-			{
-				Change change = e.AddedItems[0] as Change;
-				if (change != null)
-				{
-					UpdateChangeDiffBox(change);
-				}
-			}
+			}*/
 		}
 
 		private void UpdateChangesetSource(List<Changeset> changesets)
@@ -169,61 +81,7 @@ namespace tfsk
 			}
 			return display;
 		}
-
-		private void UpdateUI(Changeset changeset)
-		{
-			// Update tfs server
-			tbTfsServer.Text = Properties.Settings.Default.TFSUrl;
-			
-			// Update Path 
-			tbPath.Text = versionControl.FilePath;
-
-			// Update Version
-			UpdateVersionUI();
-
-			// Update num display
-			tbNumDisplay.Text = versionControl.NumDisplay.ToString();
-
-			// Update exclude committer
-			if (versionControl.ExcludeUsers != null)
-			{
-				tbExcludeUser.Text = String.Join(";", versionControl.ExcludeUsers);
-			}
-
-			// Update change comment
-			tbChangeComment.Text = changeset.Comment;
-
-			// Get all changes for this changeset
-			Change[] changes = versionControl.GetChangesForChangeset(changeset.ChangesetId);
-
-			// Update list of change files
-			lvFiles.ItemsSource = changes;
-
-			// Update diff to show the first file of the change
-			UpdateChangeDiffBox(changes[0]);
-		}
-
-		private void UpdateVersionUI()
-		{
-			if (versionControl.NoMinVersion)
-			{
-				cbNoMin.IsChecked = true;
-			}
-			else
-			{
-				tbVersionMin.Text = versionControl.VersionMin.DisplayString;
-			}
-
-			if (versionControl.GetLatestVersion)
-			{
-				cbLatest.IsChecked = true;
-			}
-			else
-			{
-				tbVersionMax.Text = versionControl.VersionMax.DisplayString;
-			}
-		}
-
+		
 		private void UpdateChangeDiffBox(Change change)
 		{
 			rtbChangeDiff.Document.Blocks.Clear();
@@ -259,91 +117,6 @@ namespace tfsk
 			}
 
 			return diffParagraph;
-		}
-
-		private void cbNoMin_Checked(object sender, RoutedEventArgs e)
-		{
-			tbVersionMin.IsEnabled = false;
-			versionControl.NoMinVersion = true;
-		}
-
-		private void cbNoMin_Unchecked(object sender, RoutedEventArgs e)
-		{
-			tbVersionMin.IsEnabled = true;
-			versionControl.NoMinVersion = false;
-		}
-
-		private void cbLatest_Checked(object sender, RoutedEventArgs e)
-		{
-			tbVersionMax.IsEnabled = false;
-			versionControl.GetLatestVersion = true;
-		}
-
-		private void cbLatest_Unchecked(object sender, RoutedEventArgs e)
-		{
-			tbVersionMax.IsEnabled = true;
-			versionControl.GetLatestVersion = false;
-		}
-
-		private void btFilter_Click(object sender, RoutedEventArgs e)
-		{
-			versionControl.ExcludeUsers = tbExcludeUser.Text.Split(';');
-			CollectionViewSource.GetDefaultView(lvChangeset.ItemsSource).Refresh();
-		}
-
-		private void btQuery_Click(object sender, RoutedEventArgs e)
-		{
-			RefreshHistory();
-		}
-
-		private void RefreshOnExecuted(object sender, ExecutedRoutedEventArgs e)
-		{
-			RefreshHistory();
-		}
-
-		private void RefreshHistory()
-		{
-			if (!Properties.Settings.Default.TFSUrl.Equals(tbTfsServer.Text))
-			{
-				Properties.Settings.Default.TFSUrl = tbTfsServer.Text;
-			}
-
-			versionControl.FilePath = tbPath.Text;
-
-			int numDisplay;
-			if (Int32.TryParse(tbNumDisplay.Text, out numDisplay))
-			{
-				versionControl.NumDisplay = numDisplay;
-			}
-
-			versionControl.NoMinVersion = true;
-
-			if (cbNoMin.IsChecked.HasValue &&
-				!cbNoMin.IsChecked.Value &&
-				!String.IsNullOrEmpty(tbVersionMin.Text))
-			{
-				versionControl.VersionMin = VersionSpec.ParseSingleSpec(tbVersionMin.Text, null);
-				versionControl.NoMinVersion = false;
-			}
-
-			versionControl.GetLatestVersion = true;
-
-			if (cbLatest.IsChecked.HasValue &&
-				!cbLatest.IsChecked.Value &&
-				!String.IsNullOrEmpty(tbVersionMax.Text))
-			{
-				versionControl.VersionMax = VersionSpec.ParseSingleSpec(tbVersionMax.Text, null);
-				versionControl.GetLatestVersion = false;
-			}
-
-			// Query changeset from version control
-			//
-			List<Changeset> changesets = versionControl.QueryChangeset();
-			UpdateChangesetSource(changesets);
-			if (changesets.Count > 0)
-			{
-				UpdateUI(changesets[0]);
-			}
 		}
 
 		private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
