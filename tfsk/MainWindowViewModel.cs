@@ -26,7 +26,8 @@ namespace tfsk
 		private Change[] _changes;
 		private Change _selectedChange;
 		private string _changeDiff;
-		
+
+		private BackgroundWorker queryHistoryWorker;
 		#endregion
 
 		#region Commands
@@ -169,6 +170,10 @@ namespace tfsk
 			GetLatestVersion = argument.GetLatestVersion;
 			NoMinVersion = argument.NoMinVersion;
 
+			queryHistoryWorker = new BackgroundWorker();
+			queryHistoryWorker.DoWork += QueryHistory_DoWork;
+			queryHistoryWorker.RunWorkerCompleted += QueryHistory_RunWorkerComplete;
+
 			UpdateVersionControl();
 			QueryHistory();
 		}
@@ -202,7 +207,12 @@ namespace tfsk
 				queryHistoryParameter.VersionEnd = VersionSpec.ParseSingleSpec(VersionMax, null);
 			}
 
-			Changesets = Server.QueryHistory(queryHistoryParameter).ToList();
+			// Query history if we are not already querying
+			//
+			if (!queryHistoryWorker.IsBusy)
+			{
+				queryHistoryWorker.RunWorkerAsync(queryHistoryParameter);
+			}
 		}
 
 		public void Filter()
@@ -307,7 +317,18 @@ namespace tfsk
 
 			return diffStr;
 		}
-		
+
+		private void QueryHistory_DoWork(object sender, DoWorkEventArgs e)
+		{
+			QueryHistoryParameters param = e.Argument as QueryHistoryParameters;
+			e.Result = Server.QueryHistory(param).ToList();
+		}
+
+		private void QueryHistory_RunWorkerComplete(object sender, RunWorkerCompletedEventArgs e)
+		{
+			Changesets = e.Result as List<Changeset>;
+		}
+
 		#endregion
 
 	}
