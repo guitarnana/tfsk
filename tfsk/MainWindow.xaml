@@ -13,9 +13,10 @@
 			<RowDefinition Height="30" />
 			<RowDefinition Height="10" />
 			<RowDefinition Height="*" />
+			<RowDefinition Height="28" />
 		</Grid.RowDefinitions>
 		
-		<Grid Grid.Row="0" Margin="2">
+		<Grid Grid.Row="0" Margin="2" >
 			<Grid.ColumnDefinitions>
 				<ColumnDefinition Width="*"/>
 				<ColumnDefinition Width="2*"/>
@@ -24,8 +25,8 @@
 				<ColumnDefinition Width="50"/>
 				<ColumnDefinition Width="90"/>
 			</Grid.ColumnDefinitions>
-			<DockPanel LastChildFill="True"
-					   Grid.Column="0">
+			<DockPanel Grid.Column="0"
+					   LastChildFill="True">
 				<Label DockPanel.Dock="Left" 
 					   x:Name="labelServer" 
 					   VerticalContentAlignment="Center" 
@@ -34,8 +35,8 @@
 						 VerticalContentAlignment="Center" 
 						 Text="{Binding TFSUrl, UpdateSourceTrigger=PropertyChanged}" />
 			</DockPanel>
-			<DockPanel LastChildFill="True"
-					   Grid.Column="1">
+			<DockPanel Grid.Column="1"
+					   LastChildFill="True">
 				<Label DockPanel.Dock="Left" 
 					   x:Name="labelPath" 
 					   VerticalContentAlignment="Center" 
@@ -44,7 +45,8 @@
 						 VerticalContentAlignment="Center" 
 						 Text="{Binding FilePath, UpdateSourceTrigger=PropertyChanged}" />
 			</DockPanel>
-			<StackPanel Grid.Column="2" Orientation="Horizontal">
+			<StackPanel Grid.Column="2" 
+						Orientation="Horizontal">
 				<Label VerticalContentAlignment="Center" 
 					   FontWeight="Bold">Version Min</Label>
 				<TextBox x:Name="tbVersionMin" Width="90" 
@@ -70,12 +72,12 @@
 					 x:Name="tbNumDisplay" 
 					 VerticalContentAlignment="Center" 
 					 Text="{Binding NumDisplay, UpdateSourceTrigger=PropertyChanged}" />
-			<Button x:Name="btQuery" 
-					Grid.Column="5" 
-					Margin="5,0" 
+			<Button Grid.Column="5" Margin="5,0" 
+					x:Name="btQuery" 
 					Content="Query (F5)" 
 					Command="{Binding QueryHistoryCommand}" />
 		</Grid>
+		
 		<Grid Grid.Row="1" Margin="2">
 			<Grid.ColumnDefinitions>
 				<ColumnDefinition Width="*"/>
@@ -110,7 +112,9 @@
 					Content="Filter (Enter)"
 					Command="{Binding FilterCommand}"/>
 		</Grid>
+		
 		<Separator Grid.Row="2" Height="5" VerticalContentAlignment="Stretch"/> 
+		
 		<Grid Grid.Row="3">
 			<Grid.RowDefinitions>
 				<RowDefinition Height="4*" />
@@ -123,14 +127,11 @@
 				<ColumnDefinition Width="*"/>
 			</Grid.ColumnDefinitions>
 
-			<ListView Margin="5" 
-					  Grid.Column="0" 
-					  Grid.Row="0" 
+			<ListView Grid.Column="0" Grid.Row="0" Margin="5" 
 					  x:Name="lvChangeset" 
 					  SelectionMode="Single" 
 					  ItemsSource="{Binding Changesets}"
-					  SelectedItem="{Binding SelectedChangeset}"
-					  SelectedIndex="0" >
+					  SelectedItem="{Binding SelectedChangeset}" >
 				<ListView.ItemContainerStyle>
 					<Style TargetType="ListViewItem">
 						<Setter Property="Height" Value="20" />
@@ -151,10 +152,8 @@
 				</ListView.View>
 			</ListView>
 
-			<TextBox x:Name="tbChangeComment" 
-					 Grid.Row="0" 
-					 Grid.Column="2" 
-					 Margin="5" 
+			<TextBox Grid.Row="0" Grid.Column="2" Margin="5" 
+					 x:Name="tbChangeComment" 
 					 Text="{Binding ChangesetMessage}" 
 					 VerticalScrollBarVisibility="Auto" 
 					 HorizontalScrollBarVisibility="Auto" 
@@ -162,9 +161,7 @@
 					 FontFamily="Consolas" FontSize="14" 
 					 TextWrapping="WrapWithOverflow" />
 
-			<ListView Margin="5" 
-					  Grid.Row="2" 
-					  Grid.Column="0" 
+			<ListView Grid.Row="2" Grid.Column="0" Margin="5" 
 					  x:Name="lvFiles" 
 					  SelectionMode="Single" 
 					  ItemsSource="{Binding Changes}"
@@ -180,10 +177,8 @@
 				</ListView.View>
 			</ListView>
 
-			<tfsk:DiffRichTextBox x:Name="rtbChangeDiff" 
-								  Grid.Row="2" 
-								  Grid.Column="2" 
-								  Margin="5" 
+			<tfsk:DiffRichTextBox Grid.Row="2" Grid.Column="2" Margin="5" 
+								  x:Name="rtbChangeDiff" 
 								  VerticalScrollBarVisibility="Auto" 
 								  HorizontalScrollBarVisibility="Auto" 
 								  IsReadOnly="True" 
@@ -194,5 +189,10 @@
 			<GridSplitter Grid.ColumnSpan="3" Grid.Row="1" Height="2" HorizontalAlignment="Stretch" VerticalAlignment="Center" />
 
 		</Grid>
+		
+		<Label Grid.Row ="4" 
+			   Content="{Binding Status}" 
+			   VerticalContentAlignment="Stretch" 
+			   Background="LightGray"/>
 	</Grid>
 </Window>

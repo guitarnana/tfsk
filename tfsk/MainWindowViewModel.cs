@@ -26,8 +26,9 @@ namespace tfsk
 		private Change[] _changes;
 		private Change _selectedChange;
 		private string _changeDiff;
+		private string _status;
 
-		private BackgroundWorker queryHistoryWorker;
+		private readonly BackgroundWorker queryHistoryWorker;
 		#endregion
 
 		#region Commands
@@ -55,7 +56,17 @@ namespace tfsk
 		public bool NoMinVersion { get; set; }
 		public string ExcludeUsers { get; set; }
 		public string SearchKeyword { get; set; }
-		
+
+		public string Status
+		{
+			get { return _status; }
+			set
+			{
+				_status = value; 
+				NotifyPropertyChanged();
+			}
+		}
+
 		public List<Changeset> Changesets
 		{
 			get { return _changesets; }
@@ -169,6 +180,7 @@ namespace tfsk
 			VersionMax = argument.VersionMax;
 			GetLatestVersion = argument.GetLatestVersion;
 			NoMinVersion = argument.NoMinVersion;
+			Status = "Ready";
 
 			queryHistoryWorker = new BackgroundWorker();
 			queryHistoryWorker.DoWork += QueryHistory_DoWork;
@@ -211,6 +223,7 @@ namespace tfsk
 			//
 			if (!queryHistoryWorker.IsBusy)
 			{
+				Status = "Querying History";
 				queryHistoryWorker.RunWorkerAsync(queryHistoryParameter);
 			}
 		}
@@ -270,11 +283,17 @@ namespace tfsk
 
 		public Change[] GetChangesForChangeset(int changsetId)
 		{
-			return Server.GetChangesForChangeset(
+			Status = String.Format("Query changes for changeset {0}", changsetId);
+
+			Change[] changes = Server.GetChangesForChangeset(
 				changsetId,
 				false, // includeDownloadInfo
 				Int32.MaxValue, // number of items to return
 				null); // return from start of this changeset
+
+			Status = "Ready";
+
+			return changes;
 		}
 
 		public string DiffItemWithPrevVersion(Item item)
@@ -326,6 +345,7 @@ namespace tfsk
 
 		private void QueryHistory_RunWorkerComplete(object sender, RunWorkerCompletedEventArgs e)
 		{
+			Status = "Ready";
 			Changesets = e.Result as List<Changeset>;
 		}
 
