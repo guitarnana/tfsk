@@ -263,7 +263,8 @@ namespace tfsk
 					}
 				}
 
-				if (!String.IsNullOrEmpty(SearchKeyword))
+				if (!String.IsNullOrEmpty(SearchKeyword) && 
+					!String.IsNullOrEmpty(changeset.Comment))
 				{
 					Match match = Regex.Match(changeset.Comment, SearchKeyword, RegexOptions.IgnoreCase);
 					if (!match.Success)
