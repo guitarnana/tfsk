@@ -111,6 +111,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="CommandlineArgument.cs" />
     <Compile Include="MainWindowViewModel.cs" />
     <Compile Include="Properties\Annotations.cs" />
     <Compile Include="DiffRichTextBox.cs" />

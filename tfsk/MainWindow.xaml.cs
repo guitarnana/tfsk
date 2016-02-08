@@ -10,27 +10,6 @@ namespace tfsk
 		public MainWindow()
 		{
 			InitializeComponent();
-
-			/*
-			if (ParseCommandlineArguments())
-			{
-				versionControl.UpdateVersionControl();
-
-				List<Changeset> changesets = versionControl.QueryChangeset();
-				UpdateChangesetSource(changesets);
-				UpdateUI(changesets[0]);
-			}
-			else
-			{
-				UsageWindow usageWindow = new UsageWindow();
-				usageWindow.Show();
-				Close();
-			}*/
-		}
-
-		private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
-		{
-			Properties.Settings.Default.Save();
 		}
 	}
 }

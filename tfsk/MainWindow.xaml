@@ -3,10 +3,7 @@
 		xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 		xmlns:tfsk="clr-namespace:tfsk"
 		x:Class="tfsk.MainWindow"
-		Title="tfsk" WindowStartupLocation="Manual" Width="1400" Height="900" Closing="Window_Closing" >
-	<Window.DataContext>
-		<tfsk:MainWindowViewModel />
-	</Window.DataContext>
+		Title="tfsk" WindowStartupLocation="Manual" Width="1400" Height="900" >
 	<Grid>
 		<Grid.RowDefinitions>
 			<RowDefinition Height="30" />
@@ -25,26 +22,55 @@
 				<ColumnDefinition Width="90"/>
 			</Grid.ColumnDefinitions>
 			<DockPanel LastChildFill="True"
-					Grid.Column="0">
-				<Label DockPanel.Dock="Left" x:Name="labelServer" VerticalContentAlignment="Center" FontWeight="Bold">Server</Label>
-				<TextBox x:Name="tbTfsServer" VerticalContentAlignment="Center"></TextBox>
+					   Grid.Column="0">
+				<Label DockPanel.Dock="Left" 
+					   x:Name="labelServer" 
+					   VerticalContentAlignment="Center" 
+					   FontWeight="Bold">Server</Label>
+				<TextBox x:Name="tbTfsServer" 
+						 VerticalContentAlignment="Center" 
+						 Text="{Binding TFSUrl}"></TextBox>
 			</DockPanel>
 			<DockPanel LastChildFill="True"
-					Grid.Column="1">
-				<Label DockPanel.Dock="Left" x:Name="labelPath" VerticalContentAlignment="Center" FontWeight="Bold">Path</Label>
-				<TextBox x:Name="tbPath" VerticalContentAlignment="Center" Text="{Binding FilePath}" />
+					   Grid.Column="1">
+				<Label DockPanel.Dock="Left" 
+					   x:Name="labelPath" 
+					   VerticalContentAlignment="Center" 
+					   FontWeight="Bold">Path</Label>
+				<TextBox x:Name="tbPath" 
+						 VerticalContentAlignment="Center" 
+						 Text="{Binding FilePath}" />
 			</DockPanel>
-			<StackPanel  Grid.Column="2" Orientation="Horizontal">
-				<Label VerticalContentAlignment="Center" FontWeight="Bold">Version Min</Label>
-				<TextBox x:Name="tbVersionMin" Width="90" VerticalContentAlignment="Center" Text="{Binding VersionMin}" />
-				<CheckBox x:Name="cbNoMin" VerticalContentAlignment="Center" IsChecked="{Binding NoMinVersion}">No Min</CheckBox>
-				<Label VerticalContentAlignment="Center" VerticalAlignment="Center" FontWeight="Bold">Max</Label>
-				<TextBox x:Name="tbVersionMax" Width="90" VerticalContentAlignment="Center" Text="{Binding VersionMax}" />
-				<CheckBox x:Name="cbLatest" VerticalContentAlignment="Center" IsChecked="{Binding GetLatestVersion}">Latest</CheckBox>
+			<StackPanel Grid.Column="2" Orientation="Horizontal">
+				<Label VerticalContentAlignment="Center" 
+					   FontWeight="Bold">Version Min</Label>
+				<TextBox x:Name="tbVersionMin" Width="90" 
+						 VerticalContentAlignment="Center" 
+						 Text="{Binding VersionMin}" />
+				<CheckBox x:Name="cbNoMin" 
+						  VerticalContentAlignment="Center" 
+						  IsChecked="{Binding NoMinVersion}">No Min</CheckBox>
+				<Label VerticalContentAlignment="Center" 
+					   FontWeight="Bold">Max</Label>
+				<TextBox x:Name="tbVersionMax" Width="90" 
+						 VerticalContentAlignment="Center" 
+						 Text="{Binding VersionMax}" />
+				<CheckBox x:Name="cbLatest" 
+						  VerticalContentAlignment="Center" 
+						  IsChecked="{Binding GetLatestVersion}">Latest</CheckBox>
 			</StackPanel>
-			<Label Grid.Column="3" x:Name="labelNumQuery" VerticalContentAlignment="Center" FontWeight="Bold" >Num History</Label>
-			<TextBox Grid.Column="4" x:Name="tbNumDisplay" VerticalContentAlignment="Center" Text="{Binding NumDisplay}" />
-			<Button x:Name="btQuery" Grid.Column="5" Margin="5,0" Content="Query (F5)" 
+			<Label Grid.Column="3" 
+				   x:Name="labelNumQuery" 
+				   VerticalContentAlignment="Center" 
+				   FontWeight="Bold" >Num History</Label>
+			<TextBox Grid.Column="4" 
+					 x:Name="tbNumDisplay" 
+					 VerticalContentAlignment="Center" 
+					 Text="{Binding NumDisplay}" />
+			<Button x:Name="btQuery" 
+					Grid.Column="5" 
+					Margin="5,0" 
+					Content="Query (F5)" 
 					Command="{Binding QueryHistoryCommand}" />
 		</Grid>
 		<Grid Grid.Row="1" Margin="2">
@@ -55,19 +81,28 @@
 			</Grid.ColumnDefinitions>
 			<DockPanel LastChildFill="True"
 					Grid.Column="0">
-				<Label DockPanel.Dock="Left" VerticalContentAlignment="Center" FontWeight="Bold" Content="Exclude Users"/>
-				<TextBox x:Name="tbExcludeUser" VerticalContentAlignment="Center" 
+				<Label DockPanel.Dock="Left" 
+					   VerticalContentAlignment="Center" 
+					   FontWeight="Bold" 
+					   Content="Exclude Users"/>
+				<TextBox x:Name="tbExcludeUser" 
+						 VerticalContentAlignment="Center" 
 						 Text="{Binding ExcludeUsers}"
-						 ToolTip="Each user is separated by semicolon (example -  UserA;UserB;UserC)"/>
+						 ToolTip="Each user is separated by semicolon (example - UserA;UserB;UserC)"/>
 			</DockPanel>
 			<DockPanel LastChildFill="True"
 					Grid.Column="1">
-				<Label DockPanel.Dock="Left" VerticalContentAlignment="Center" FontWeight="Bold">Search Message</Label>
-				<TextBox x:Name="tbSearchMessage" VerticalContentAlignment="Center" 
+				<Label DockPanel.Dock="Left" 
+					   VerticalContentAlignment="Center" 
+					   FontWeight="Bold">Search Message</Label>
+				<TextBox x:Name="tbSearchMessage" 
+						 VerticalContentAlignment="Center" 
 						 Text="{Binding SearchKeyword}"
 						 ToolTip="Support Regex"/>
 			</DockPanel>
-			<Button x:Name="btFilter" Grid.Column="2" Margin="5,0" 
+			<Button x:Name="btFilter" 
+					Grid.Column="2" 
+					Margin="5,0" 
 					IsDefault="True" 
 					Content="Filter (Enter)"
 					Command="{Binding FilterCommand}"/>
@@ -85,11 +120,14 @@
 				<ColumnDefinition Width="*"/>
 			</Grid.ColumnDefinitions>
 
-			<ListView Margin="5" Grid.Column="0" Grid.Row="0" Name="lvChangeset" 
-					SelectionMode="Single" 
-					ItemsSource="{Binding Changesets}"
-					SelectedItem="{Binding SelectedChangeset}"
-					SelectedIndex="0" >
+			<ListView Margin="5" 
+					  Grid.Column="0" 
+					  Grid.Row="0" 
+					  Name="lvChangeset" 
+					  SelectionMode="Single" 
+					  ItemsSource="{Binding Changesets}"
+					  SelectedItem="{Binding SelectedChangeset}"
+					  SelectedIndex="0" >
 				<ListView.ItemContainerStyle>
 					<Style TargetType="ListViewItem">
 						<Setter Property="Height" Value="20" />
@@ -110,7 +148,10 @@
 				</ListView.View>
 			</ListView>
 
-			<TextBox x:Name="tbChangeComment" Grid.Row="0" Grid.Column="2" Margin="5" 
+			<TextBox x:Name="tbChangeComment" 
+					 Grid.Row="0" 
+					 Grid.Column="2" 
+					 Margin="5" 
 					 Text="{Binding ChangesetMessage}" 
 					 VerticalScrollBarVisibility="Auto" 
 					 HorizontalScrollBarVisibility="Auto" 
@@ -118,7 +159,10 @@
 					 FontFamily="Consolas" FontSize="14" 
 					 TextWrapping="WrapWithOverflow" />
 
-			<ListView Margin="5" Grid.Row="2" Grid.Column="0" Name="lvFiles" 
+			<ListView Margin="5" 
+					  Grid.Row="2" 
+					  Grid.Column="0" 
+					  x:Name="lvFiles" 
 					  SelectionMode="Single" 
 					  ItemsSource="{Binding Changes}"
 					  SelectedItem="{Binding SelectedChange}"
@@ -133,12 +177,15 @@
 				</ListView.View>
 			</ListView>
 
-			<tfsk:DiffRichTextBox x:Name="rtbChangeDiff" Grid.Row="2" Grid.Column="2" Margin="5" 
-						 VerticalScrollBarVisibility="Auto" 
-						 HorizontalScrollBarVisibility="Auto" 
-						 IsReadOnly="True" 
-						 FontFamily="Consolas" FontSize="14" 
-						 ChangeDiff ="{Binding ChangeDiff}" />
+			<tfsk:DiffRichTextBox x:Name="rtbChangeDiff" 
+								  Grid.Row="2" 
+								  Grid.Column="2" 
+								  Margin="5" 
+								  VerticalScrollBarVisibility="Auto" 
+								  HorizontalScrollBarVisibility="Auto" 
+								  IsReadOnly="True" 
+								  FontFamily="Consolas" FontSize="14" 
+								  ChangeDiff ="{Binding ChangeDiff}" />
 
 			<GridSplitter Grid.Column="1" Grid.RowSpan="3" Width="2" HorizontalAlignment="Center" />
 			<GridSplitter Grid.ColumnSpan="3" Grid.Row="1" Height="2" HorizontalAlignment="Stretch" VerticalAlignment="Center" />

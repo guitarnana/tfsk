@@ -17,10 +17,24 @@ namespace tfsk
 {
 	public class MainWindowViewModel : INotifyPropertyChanged
 	{
-		public ICommand QueryHistoryCommand { get; private set; }
-		public ICommand FilterCommand { get; private set; }
+		#region Fields
 
 		private VersionControlServer Server;
+		private List<Changeset> _changesets;
+		private string _changesetMessage;
+		private Changeset _selectedChangeset;
+		private Change[] _changes;
+		private Change _selectedChange;
+		private string _changeDiff;
+		
+		#endregion
+
+		#region Commands
+
+		public ICommand QueryHistoryCommand { get; private set; }
+		public ICommand FilterCommand { get; private set; }
+		
+		#endregion
 
 		public string TFSUrl
 		{
@@ -32,7 +46,6 @@ namespace tfsk
 				NotifyPropertyChanged();
 			}
 		}
-
 		public string FilePath { get; set; }
 		public int NumDisplay { get; set; }
 		public string VersionMin { get; set; }
@@ -41,8 +54,6 @@ namespace tfsk
 		public bool GetLatestVersion { get; set; }
 		public bool NoMinVersion { get; set; }
 		public string SearchKeyword { get; set; }
-
-		private List<Changeset> _changesets;
 		public List<Changeset> Changesets
 		{
 			get { return _changesets; }
@@ -54,7 +65,6 @@ namespace tfsk
 			}
 		}
 
-		private string _changesetMessage;
 		public string ChangesetMessage
 		{
 			get { return _changesetMessage; }
@@ -65,7 +75,6 @@ namespace tfsk
 			}
 		}
 
-		private Changeset _selectedChangeset;
 		public Changeset SelectedChangeset
 		{
 			get { return _selectedChangeset; }
@@ -88,7 +97,6 @@ namespace tfsk
 			}
 		}
 
-		private Change[] _changes;
 		public Change[] Changes
 		{
 			get { return _changes; }
@@ -104,7 +112,6 @@ namespace tfsk
 			}
 		}
 
-		private Change _selectedChange;
 		public Change SelectedChange
 		{
 			get { return _selectedChange; }
@@ -122,8 +129,6 @@ namespace tfsk
 			}
 		}
 
-		private string _changeDiff;
-
 		public string ChangeDiff
 		{
 			get { return _changeDiff; }
@@ -134,27 +139,25 @@ namespace tfsk
 			}
 		}
 		
-		public MainWindowViewModel()
+		#region Constructor
+		public MainWindowViewModel(CommandlineArgument argument)
 		{
-			Init();
+			QueryHistoryCommand = new RelayCommand(QueryHistory);
+			FilterCommand = new RelayCommand(Filter);
 
-			if (!ParseCommandlineArguments())
-			{
-				// request close
-			}
-			
+			FilePath = argument.FilePath;
+			NumDisplay = argument.NumDisplay;
+			ExcludeUsers = argument.ExcludeUsers;
+			VersionMin = argument.VersionMin;
+			VersionMax = argument.VersionMax;
+			GetLatestVersion = argument.GetLatestVersion;
+			NoMinVersion = argument.NoMinVersion;
+
 			UpdateVersionControl();
 			QueryHistory();
 		}
-
-		private void Init()
-		{
-			NoMinVersion = true;
-			GetLatestVersion = true;
-			NumDisplay = 100;
-			QueryHistoryCommand = new RelayCommand(QueryHistory);
-			FilterCommand = new RelayCommand(Filter);
-		}
+		
+		#endregion
 
 		#region INotifyPropertyChanged Implementation
 		public event PropertyChangedEventHandler PropertyChanged;
@@ -167,70 +170,7 @@ namespace tfsk
 		}
 		#endregion
 
-		private bool ParseCommandlineArguments()
-		{
-			bool success = true;
-			string[] args = Environment.GetCommandLineArgs();
-			for (int i = 1; i < args.Length; i += 2)
-			{
-				if (String.Equals(args[i], "-server", StringComparison.OrdinalIgnoreCase))
-				{
-					Properties.Settings.Default.TFSUrl = args[i + 1];
-				}
-				else if (String.Equals(args[i], "-path", StringComparison.OrdinalIgnoreCase))
-				{
-					FilePath = args[i + 1];
-				}
-				else if (String.Equals(args[i], "-numdisplay", StringComparison.OrdinalIgnoreCase))
-				{
-					int numDisplay;
-					if (Int32.TryParse(args[i + 1], out numDisplay))
-					{
-						NumDisplay = numDisplay;
-					}
-				}
-				else if (String.Equals(args[i], "-excludeUser", StringComparison.OrdinalIgnoreCase))
-				{
-					ExcludeUsers = args[i + 1].Split(';');
-				}
-				else if (String.Equals(args[i], "-version", StringComparison.OrdinalIgnoreCase))
-				{
-					VersionSpec[] versions = VersionSpec.Parse(args[i + 1], null);
-
-					if (versions != null && versions.Length == 1)
-					{
-						VersionMax = versions[0].DisplayString;
-						GetLatestVersion = false;
-					}
-					else if (versions != null && versions.Length == 2)
-					{
-						VersionMin = versions[0].DisplayString;
-						VersionMax = versions[1].DisplayString;
-						GetLatestVersion = false;
-						NoMinVersion = false;
-					}
-				}
-				else
-				{
-					success = false;
-				}
-			}
-			/*
-			if (String.IsNullOrEmpty(Properties.Settings.Default.TFSUrl))
-			{
-				MessageBox.Show("TFS Server URL is empty. Please set it using -server <tfsurl>");
-				success = false;
-			}
-
-			if (String.IsNullOrEmpty(FilePath))
-			{
-				MessageBox.Show("File path is empty. Please set it using -path <file or directory>");
-				success = false;
-			}
-			*/
-			return success;
-		}
-
+		#region Command handler
 		public void QueryHistory()
 		{
 			QueryHistoryParameters queryHistoryParameter = new QueryHistoryParameters(FilePath, RecursionType.Full);
@@ -253,7 +193,10 @@ namespace tfsk
 		{
 			CollectionViewSource.GetDefaultView(Changesets).Refresh();
 		}
-
+		#endregion
+		
+		#region Helper functions
+		
 		/// <summary>
 		/// Filter out user displayed in changeset listview 
 		/// </summary>
@@ -347,6 +290,8 @@ namespace tfsk
 
 			return diffStr;
 		}
+		
+		#endregion
 
 	}
 }
