@@ -8,6 +8,8 @@ namespace tfsk
 {
 	public class CommandlineArgument
 	{
+		public const int DefaultNumDisplay = 100;
+
 		public string FilePath { get; set; }
 		public int NumDisplay { get; set; }
 		public string ExcludeUsers { get; set; }
@@ -18,7 +20,7 @@ namespace tfsk
 
 		public CommandlineArgument()
 		{
-			NumDisplay = 100;
+			NumDisplay = DefaultNumDisplay;
 			NoMinVersion = true;
 			GetLatestVersion = true;
 		}

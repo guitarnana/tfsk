@@ -16,6 +16,7 @@
 			<RowDefinition Height="28" />
 		</Grid.RowDefinitions>
 		
+		<!-- Query related inputs -->
 		<Grid Grid.Row="0" Margin="2" >
 			<Grid.ColumnDefinitions>
 				<ColumnDefinition Width="*"/>
@@ -25,6 +26,8 @@
 				<ColumnDefinition Width="50"/>
 				<ColumnDefinition Width="90"/>
 			</Grid.ColumnDefinitions>
+			
+			<!-- TFS server input -->
 			<DockPanel Grid.Column="0"
 					   LastChildFill="True">
 				<Label DockPanel.Dock="Left" 
@@ -35,6 +38,8 @@
 						 VerticalContentAlignment="Center" 
 						 Text="{Binding TFSUrl, UpdateSourceTrigger=PropertyChanged}" />
 			</DockPanel>
+			
+			<!-- File path input -->
 			<DockPanel Grid.Column="1"
 					   LastChildFill="True">
 				<Label DockPanel.Dock="Left" 
@@ -45,25 +50,33 @@
 						 VerticalContentAlignment="Center" 
 						 Text="{Binding FilePath, UpdateSourceTrigger=PropertyChanged}" />
 			</DockPanel>
+			
+			<!-- Version related inputs -->
 			<StackPanel Grid.Column="2" 
 						Orientation="Horizontal">
+				<!-- Min version -->
 				<Label VerticalContentAlignment="Center" 
 					   FontWeight="Bold">Version Min</Label>
 				<TextBox x:Name="tbVersionMin" Width="90" 
 						 VerticalContentAlignment="Center" 
+						 IsReadOnly="{Binding NoMinVersion}"
 						 Text="{Binding VersionMin, UpdateSourceTrigger=PropertyChanged}" />
 				<CheckBox x:Name="cbNoMin" 
 						  VerticalContentAlignment="Center" 
 						  IsChecked="{Binding NoMinVersion}">No Min</CheckBox>
+				<!-- Max version -->
 				<Label VerticalContentAlignment="Center" 
 					   FontWeight="Bold">Max</Label>
 				<TextBox x:Name="tbVersionMax" Width="90" 
 						 VerticalContentAlignment="Center" 
+						 IsReadOnly="{Binding GetLatestVersion}"
 						 Text="{Binding VersionMax, UpdateSourceTrigger=PropertyChanged}" />
 				<CheckBox x:Name="cbLatest" 
 						  VerticalContentAlignment="Center" 
 						  IsChecked="{Binding GetLatestVersion}">Latest</CheckBox>
 			</StackPanel>
+			
+			<!-- Num display -->
 			<Label Grid.Column="3" 
 				   x:Name="labelNumQuery" 
 				   VerticalContentAlignment="Center" 
@@ -78,6 +91,7 @@
 					Command="{Binding QueryHistoryCommand}" />
 		</Grid>
 		
+		<!-- Filter related inputs -->
 		<Grid Grid.Row="1" Margin="2">
 			<Grid.ColumnDefinitions>
 				<ColumnDefinition Width="*"/>
@@ -115,6 +129,7 @@
 		
 		<Separator Grid.Row="2" Height="5" VerticalContentAlignment="Stretch"/> 
 		
+		<!-- Result display -->
 		<Grid Grid.Row="3">
 			<Grid.RowDefinitions>
 				<RowDefinition Height="4*" />
@@ -190,6 +205,7 @@
 
 		</Grid>
 		
+		<!-- Status bar -->
 		<Label Grid.Row ="4" 
 			   Content="{Binding Status}" 
 			   VerticalContentAlignment="Stretch" 

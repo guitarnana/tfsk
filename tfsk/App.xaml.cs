@@ -15,7 +15,7 @@ namespace tfsk
 	{
 		private void Application_DispatcherUnhandledException(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
 		{
-			MessageBox.Show(String.Format("Message: {0}\n Stack:\n{1}",e.Exception.Message, e.Exception.StackTrace), "Error");
+			MessageBox.Show(String.Format("Message:\n{0}\n Stack:\n{1}",e.Exception.Message, e.Exception.StackTrace), "Error");
 			e.Handled = true;
 		}
 

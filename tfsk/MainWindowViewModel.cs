@@ -27,6 +27,9 @@ namespace tfsk
 		private Change _selectedChange;
 		private string _changeDiff;
 		private string _status;
+		private int _numDisplay;
+		private bool _getLatestVersion;
+		private bool _noMinVersion;
 
 		private readonly BackgroundWorker queryHistoryWorker;
 		#endregion
@@ -49,13 +52,19 @@ namespace tfsk
 			}
 		}
 		public string FilePath { get; set; }
-		public int NumDisplay { get; set; }
 		public string VersionMin { get; set; }
 		public string VersionMax { get; set; }
-		public bool GetLatestVersion { get; set; }
-		public bool NoMinVersion { get; set; }
 		public string ExcludeUsers { get; set; }
 		public string SearchKeyword { get; set; }
+
+		public int NumDisplay
+		{
+			get { return _numDisplay; }
+			set 
+			{
+				_numDisplay = (value <= 0) ? CommandlineArgument.DefaultNumDisplay : value;
+			}
+		}
 
 		public string Status
 		{
@@ -63,6 +72,25 @@ namespace tfsk
 			set
 			{
 				_status = value; 
+				NotifyPropertyChanged();
+			}
+		}
+
+		public bool GetLatestVersion
+		{
+			get { return _getLatestVersion; }
+			set
+			{
+				_getLatestVersion = value;
+				NotifyPropertyChanged();
+			}
+		}
+		public bool NoMinVersion
+		{
+			get { return _noMinVersion; }
+			set
+			{
+				_noMinVersion = value;
 				NotifyPropertyChanged();
 			}
 		}
