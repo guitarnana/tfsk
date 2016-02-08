@@ -50,10 +50,11 @@ namespace tfsk
 		public int NumDisplay { get; set; }
 		public string VersionMin { get; set; }
 		public string VersionMax { get; set; }
-		public string[] ExcludeUsers { get; set; }
 		public bool GetLatestVersion { get; set; }
 		public bool NoMinVersion { get; set; }
+		public string ExcludeUsers { get; set; }
 		public string SearchKeyword { get; set; }
+		
 		public List<Changeset> Changesets
 		{
 			get { return _changesets; }
@@ -208,6 +209,7 @@ namespace tfsk
 		{
 			CollectionViewSource.GetDefaultView(Changesets).Refresh();
 		}
+		
 		#endregion
 		
 		#region Helper functions
@@ -226,9 +228,9 @@ namespace tfsk
 			Changeset changeset = item as Changeset;
 			if (changeset != null)
 			{
-				string[] excludeUsers = ExcludeUsers;
-				if (excludeUsers != null)
+				if (ExcludeUsers != null)
 				{
+					string[] excludeUsers = ExcludeUsers.Split(';');
 					foreach (string user in excludeUsers)
 					{
 						if (changeset.OwnerDisplayName.Equals(user))

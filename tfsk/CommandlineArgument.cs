@@ -10,7 +10,7 @@ namespace tfsk
 	{
 		public string FilePath { get; set; }
 		public int NumDisplay { get; set; }
-		public string[] ExcludeUsers { get; set; }
+		public string ExcludeUsers { get; set; }
 		public string VersionMin { get; set; }
 		public string VersionMax { get; set; }
 		public bool GetLatestVersion { get; set; }

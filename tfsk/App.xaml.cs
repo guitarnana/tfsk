@@ -69,7 +69,7 @@ namespace tfsk
 				}
 				else if (String.Equals(args[i], "-excludeUser", StringComparison.OrdinalIgnoreCase))
 				{
-					arguments.ExcludeUsers = args[i + 1].Split(';');
+					arguments.ExcludeUsers = args[i + 1];
 				}
 				else if (String.Equals(args[i], "-version", StringComparison.OrdinalIgnoreCase))
 				{

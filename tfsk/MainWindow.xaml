@@ -4,6 +4,9 @@
 		xmlns:tfsk="clr-namespace:tfsk"
 		x:Class="tfsk.MainWindow"
 		Title="tfsk" WindowStartupLocation="Manual" Width="1400" Height="900" >
+	<Window.InputBindings>
+		<KeyBinding Command="{Binding QueryHistoryCommand}" Key="F5"/>
+	</Window.InputBindings>
 	<Grid>
 		<Grid.RowDefinitions>
 			<RowDefinition Height="30" />
@@ -29,7 +32,7 @@
 					   FontWeight="Bold">Server</Label>
 				<TextBox x:Name="tbTfsServer" 
 						 VerticalContentAlignment="Center" 
-						 Text="{Binding TFSUrl}"></TextBox>
+						 Text="{Binding TFSUrl, UpdateSourceTrigger=PropertyChanged}"></TextBox>
 			</DockPanel>
 			<DockPanel LastChildFill="True"
 					   Grid.Column="1">
@@ -39,14 +42,14 @@
 					   FontWeight="Bold">Path</Label>
 				<TextBox x:Name="tbPath" 
 						 VerticalContentAlignment="Center" 
-						 Text="{Binding FilePath}" />
+						 Text="{Binding FilePath, UpdateSourceTrigger=PropertyChanged}" />
 			</DockPanel>
 			<StackPanel Grid.Column="2" Orientation="Horizontal">
 				<Label VerticalContentAlignment="Center" 
 					   FontWeight="Bold">Version Min</Label>
 				<TextBox x:Name="tbVersionMin" Width="90" 
 						 VerticalContentAlignment="Center" 
-						 Text="{Binding VersionMin}" />
+						 Text="{Binding VersionMin, UpdateSourceTrigger=PropertyChanged}" />
 				<CheckBox x:Name="cbNoMin" 
 						  VerticalContentAlignment="Center" 
 						  IsChecked="{Binding NoMinVersion}">No Min</CheckBox>
@@ -54,7 +57,7 @@
 					   FontWeight="Bold">Max</Label>
 				<TextBox x:Name="tbVersionMax" Width="90" 
 						 VerticalContentAlignment="Center" 
-						 Text="{Binding VersionMax}" />
+						 Text="{Binding VersionMax, UpdateSourceTrigger=PropertyChanged}" />
 				<CheckBox x:Name="cbLatest" 
 						  VerticalContentAlignment="Center" 
 						  IsChecked="{Binding GetLatestVersion}">Latest</CheckBox>
@@ -66,7 +69,7 @@
 			<TextBox Grid.Column="4" 
 					 x:Name="tbNumDisplay" 
 					 VerticalContentAlignment="Center" 
-					 Text="{Binding NumDisplay}" />
+					 Text="{Binding NumDisplay, UpdateSourceTrigger=PropertyChanged}" />
 			<Button x:Name="btQuery" 
 					Grid.Column="5" 
 					Margin="5,0" 
@@ -87,7 +90,7 @@
 					   Content="Exclude Users"/>
 				<TextBox x:Name="tbExcludeUser" 
 						 VerticalContentAlignment="Center" 
-						 Text="{Binding ExcludeUsers}"
+						 Text="{Binding ExcludeUsers, UpdateSourceTrigger=PropertyChanged}"
 						 ToolTip="Each user is separated by semicolon (example - UserA;UserB;UserC)"/>
 			</DockPanel>
 			<DockPanel LastChildFill="True"
@@ -97,7 +100,7 @@
 					   FontWeight="Bold">Search Message</Label>
 				<TextBox x:Name="tbSearchMessage" 
 						 VerticalContentAlignment="Center" 
-						 Text="{Binding SearchKeyword}"
+						 Text="{Binding SearchKeyword, UpdateSourceTrigger=PropertyChanged}"
 						 ToolTip="Support Regex"/>
 			</DockPanel>
 			<Button x:Name="btFilter" 
