@@ -84,6 +84,7 @@ namespace tfsk
 					return;
 
 				_selectedChangeset = value;
+
 				if (_selectedChangeset != null)
 				{
 					ChangesetMessage = _selectedChangeset.Comment;
@@ -94,6 +95,8 @@ namespace tfsk
 					ChangesetMessage = "";
 					Changes = null;
 				}
+
+				NotifyPropertyChanged();
 			}
 		}
 
@@ -102,12 +105,18 @@ namespace tfsk
 			get { return _changes; }
 			set
 			{
-				_changes = value;
+				if (_changes == value)
+					return;
 
-				if (_changes.Length > 0)
+				_changes = value;
+				if (_changes != null)
 				{
-					SelectedChange = _changes[0];
+					if (_changes.Length > 0)
+					{
+						SelectedChange = _changes[0];
+					}
 				}
+
 				NotifyPropertyChanged();
 			}
 		}
@@ -126,6 +135,12 @@ namespace tfsk
 				{
 					ChangeDiff = DiffItemWithPrevVersion(_selectedChange.Item);
 				}
+				else
+				{
+					ChangeDiff = "";
+				}
+
+				NotifyPropertyChanged();
 			}
 		}
 
